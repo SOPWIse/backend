@@ -1,6 +1,9 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
@@ -33,15 +36,14 @@ const SWAGGER_PREFIX = '/docs';
  *       code below with API keys, security requirements, tags and more.
  */
 function createSwagger(app: INestApplication) {
+  const options = new DocumentBuilder()
+    .setTitle(SWAGGER_TITLE)
+    .setDescription(SWAGGER_DESCRIPTION)
+    .addBearerAuth()
+    .build();
 
-    const options = new DocumentBuilder()
-        .setTitle(SWAGGER_TITLE)
-        .setDescription(SWAGGER_DESCRIPTION)
-        .addBearerAuth()
-        .build();
-
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(SWAGGER_PREFIX, app, document);
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup(SWAGGER_PREFIX, app, document);
 }
 
 /**
@@ -51,24 +53,28 @@ function createSwagger(app: INestApplication) {
  * parsing middleware.
  */
 async function bootstrap(): Promise<void> {
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
 
-    const app = await NestFactory.create<NestFastifyApplication>(
-        AppModule,
-        new FastifyAdapter()
-    );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // Automatically transform payloads to DTO instances
+      whitelist: true, // Strip properties that do not have decorators
+      forbidNonWhitelisted: true, // Throw an error if non-whitelisted properties are present
+    }),
+  );
 
-    // @todo Enable Helmet for better API security headers
+  // @todo Enable Helmet for better API security headers
 
-    app.setGlobalPrefix(process.env.API_PREFIX || API_DEFAULT_PREFIX);
+  app.setGlobalPrefix(process.env.API_PREFIX || API_DEFAULT_PREFIX);
 
-    if (!process.env.SWAGGER_ENABLE || process.env.SWAGGER_ENABLE === '1') {
-        createSwagger(app);
-    }
+  if (!process.env.SWAGGER_ENABLE || process.env.SWAGGER_ENABLE === '1') {
+    createSwagger(app);
+  }
 
-    // const logInterceptor = app.select(CommonModule).get(LogInterceptor);
-    // app.useGlobalInterceptors(logInterceptor);
-
-    await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
+  await app.listen(process.env.API_PORT || API_DEFAULT_PORT, '192.168.1.5');
 }
 
 /**
@@ -79,11 +85,10 @@ async function bootstrap(): Promise<void> {
  * @todo It is often advised to enhance the code below with an exception-catching
  *       service for better error handling in production environments.
  */
-bootstrap().catch(err => {
+bootstrap().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error(err);
 
-    // eslint-disable-next-line no-console
-    console.error(err);
-
-    const defaultExitCode = 1;
-    process.exit(defaultExitCode);
+  const defaultExitCode = 1;
+  process.exit(defaultExitCode);
 });
