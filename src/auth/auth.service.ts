@@ -5,6 +5,7 @@ import { UserService } from '../user/user.service';
 import * as argon2 from 'argon2';
 import { Role } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { Login, Register, SignInToken } from '../types/auth.types';
 
 @Injectable()
 export class AuthService {
@@ -15,41 +16,30 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async register(
-    email: string,
-    name: string,
-    password: string,
-    role: Role = Role.ASSISTANT,
-  ) {
+  async register({ email, name, password, role }: Register) {
     const hashedPassword = await argon2.hash(password);
     return this.userService.createUser(email, name, hashedPassword, role);
   }
 
-  async login(dto: { email: string; password: string }) {
-    console.log('dto', dto);
+  async login({ email, password }: Login) {
     const user = await this.prisma.sopWiseUser.findUnique({
-      where: {
-        email: dto.email,
-      },
+      where: { email },
     });
     if (!user) {
       throw new ForbiddenException('User not found');
     }
-    const pwMatch = await argon2.verify(user.hash, dto.password);
+    const pwMatch = await argon2.verify(user.hash, password);
     if (!pwMatch) {
       throw new ForbiddenException('Password incorrect');
     }
-    return this.signToken(user.id, user.email);
+    return this.signToken({ email, userId: user.id });
   }
 
   async logout() {
     return { message: 'Logged out successfully!' };
   }
 
-  private async signToken(
-    userId: string | number,
-    email: string,
-  ): Promise<{
+  private async signToken({ email, userId }: SignInToken): Promise<{
     access_token: string;
   }> {
     const payload = {

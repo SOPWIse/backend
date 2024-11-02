@@ -1,6 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { GetCurrentUser } from './decorator/current-user.decorator';
+import { SopWiseUser } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -8,8 +9,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getCurrentUser(@GetCurrentUser() user: any) {
-    // `user` here is the authenticated user's data from JWT
+  getCurrentUser(@GetCurrentUser() user: SopWiseUser) {
     return user;
   }
 }

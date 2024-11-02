@@ -20,13 +20,12 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.OK)
   async register(@Body() { email, name, password, role }: RegisterDto) {
-    return this.authService.register(email, name, password, role);
+    return this.authService.register({ email, name, password, role });
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() req: { email: string; password: string }) {
-    console.log('req.user', req);
     return this.authService.login(req);
   }
 
