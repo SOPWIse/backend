@@ -1,4 +1,11 @@
-import { Controller, Post, Request, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RolesGuard } from '../roles/roles.guard';
 import { Roles } from '../roles/roles.decorator';
@@ -11,11 +18,13 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @HttpCode(HttpStatus.OK)
   async register(@Body() { email, name, password, role }: RegisterDto) {
     return this.authService.register(email, name, password, role);
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(@Body() req: { email: string; password: string }) {
     console.log('req.user', req);
     return this.authService.login(req);

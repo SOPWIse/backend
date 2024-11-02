@@ -73,8 +73,9 @@ async function bootstrap(): Promise<void> {
   if (!process.env.SWAGGER_ENABLE || process.env.SWAGGER_ENABLE === '1') {
     createSwagger(app);
   }
+  app.enableCors();
 
-  await app.listen(process.env.API_PORT || API_DEFAULT_PORT, '192.168.1.5');
+  await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
 }
 
 /**
