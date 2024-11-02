@@ -25,7 +25,7 @@ export class AuthService {
     return this.userService.createUser(email, name, hashedPassword, role);
   }
 
-  async login(dto: any) {
+  async login(dto: { email: string; password: string }) {
     console.log('dto', dto);
     const user = await this.prisma.sopWiseUser.findUnique({
       where: {
