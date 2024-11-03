@@ -41,13 +41,13 @@
     "class-validator": "^0.14.1",
     "date-fns": "^4.1.0",
     "fastify": "^4.25.2",
-    "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^7.8.1",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",

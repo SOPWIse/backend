@@ -7,9 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 import * as argon2 from 'argon2';
-import { Role } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
-import { RegisterDto } from './dto/auth.dto';
+import { Login, Register } from '../types/auth.types';
 
 @Injectable()
 export class AuthService {
@@ -20,14 +19,14 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async register(
-    email: string,
-    name: string,
-    password: string,
-    role: Role = Role.ASSISTANT,
-    provider?: string,
-    metaData?: string,
-  ) {
+  async register({
+    email,
+    name,
+    password,
+    role,
+    provider,
+    metaData,
+  }: Register) {
     const hashedPassword = await argon2.hash(password);
     return this.userService.createUser(
       email,
@@ -39,24 +38,21 @@ export class AuthService {
     );
   }
 
-  async login(dto: { email: string; password: string }) {
-    console.log('dto', dto);
+  async login({ email, password }: Login) {
     const user = await this.prisma.sopWiseUser.findUnique({
-      where: {
-        email: dto.email,
-      },
+      where: { email },
     });
     if (!user) {
       throw new ForbiddenException('User not found');
     }
-    const pwMatch = await argon2.verify(user.hash, dto.password);
+    const pwMatch = await argon2.verify(user.hash, password);
     if (!pwMatch) {
       throw new ForbiddenException('Password incorrect');
     }
     return this.signToken(user.id, user.email);
   }
 
-  async ssoLogin(ssoData: RegisterDto) {
+  async ssoLogin(ssoData: Register) {
     const user = await this.findOrCreateSsoUser(ssoData);
     if (!user) {
       throw new UnauthorizedException('SSO Login failed');
@@ -68,23 +64,15 @@ export class AuthService {
     return { message: 'Logged out successfully!' };
   }
 
-  async findOrCreateSsoUser(ssoData: RegisterDto) {
-    const { email, name, role, password, provider, metaData } = ssoData;
+  async findOrCreateSsoUser(ssoData: Register) {
+    const { email } = ssoData;
     let user = await this.prisma.sopWiseUser.findUnique({
       where: { email },
     });
 
     if (!user) {
-      user = await this.register(
-        email,
-        name,
-        password,
-        role,
-        provider,
-        metaData,
-      );
+      user = await this.register(ssoData);
     }
-
     return user;
   }
 

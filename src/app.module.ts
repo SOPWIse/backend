@@ -9,11 +9,11 @@ import { UserService } from './user/user.service';
 import { AuthController } from './auth/auth.controller';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaService } from './prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [AuthModule, UserModule, PrismaModule],
+  imports: [AuthModule, UserModule, PrismaModule, ConfigModule.forRoot()],
   controllers: [AppController],
   providers: [
     AppService,

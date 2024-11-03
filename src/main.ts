@@ -7,6 +7,7 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/ExceptionFilter';
 // import { CommonModule, LogInterceptor } from './modules/common';
 
 /**
@@ -74,6 +75,8 @@ async function bootstrap(): Promise<void> {
     createSwagger(app);
   }
   app.enableCors();
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
 }
