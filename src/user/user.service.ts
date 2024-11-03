@@ -6,13 +6,22 @@ import { Role } from '@prisma/client';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(email: string, name: string, hash: string, role: Role) {
+  async createUser(
+    email: string,
+    name: string,
+    hash: string,
+    role: Role,
+    provider?: string,
+    metaData?: string,
+  ) {
     return this.prisma.sopWiseUser.create({
       data: {
         email,
         name,
         hash,
         role,
+        provider,
+        metaData,
       },
     });
   }

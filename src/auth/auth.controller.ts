@@ -30,6 +30,12 @@ export class AuthController {
     return this.authService.login(req);
   }
 
+  @Post('sso-login')
+  @HttpCode(HttpStatus.OK)
+  async ssoLogin(@Body() ssoData: RegisterDto) {
+    return this.authService.ssoLogin(ssoData);
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post('admin')

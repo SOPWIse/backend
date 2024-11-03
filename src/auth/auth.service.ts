@@ -1,10 +1,15 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 import * as argon2 from 'argon2';
 import { Role } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { RegisterDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +25,18 @@ export class AuthService {
     name: string,
     password: string,
     role: Role = Role.ASSISTANT,
+    provider?: string,
+    metaData?: string,
   ) {
     const hashedPassword = await argon2.hash(password);
-    return this.userService.createUser(email, name, hashedPassword, role);
+    return this.userService.createUser(
+      email,
+      name,
+      hashedPassword,
+      role,
+      provider,
+      metaData,
+    );
   }
 
   async login(dto: { email: string; password: string }) {
@@ -42,8 +56,36 @@ export class AuthService {
     return this.signToken(user.id, user.email);
   }
 
+  async ssoLogin(ssoData: RegisterDto) {
+    const user = await this.findOrCreateSsoUser(ssoData);
+    if (!user) {
+      throw new UnauthorizedException('SSO Login failed');
+    }
+    return this.signToken(user.id, user.email);
+  }
+
   async logout() {
     return { message: 'Logged out successfully!' };
+  }
+
+  async findOrCreateSsoUser(ssoData: RegisterDto) {
+    const { email, name, role, password, provider, metaData } = ssoData;
+    let user = await this.prisma.sopWiseUser.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      user = await this.register(
+        email,
+        name,
+        password,
+        role,
+        provider,
+        metaData,
+      );
+    }
+
+    return user;
   }
 
   private async signToken(
