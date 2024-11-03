@@ -20,7 +20,7 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @Length(4, 30, { message: 'Password must be between 4 and 20 characters' })
+  @Length(4, 50, { message: 'Password must be between 4 and 50 characters' })
   @ApiProperty({ example: 'password' })
   password: string;
 
