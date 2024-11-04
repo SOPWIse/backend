@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 interface ErrorResponse {
   statusCode: number;
@@ -19,8 +20,8 @@ interface ErrorResponse {
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    const response: FastifyReply = ctx.getResponse<FastifyReply>();
+    const request: FastifyRequest = ctx.getRequest<FastifyRequest>();
 
     const status =
       exception instanceof HttpException
@@ -51,7 +52,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
             : null,
       };
     }
+    console.log('\x1b[31m%s\x1b[0m', '===========Error=========');
+    console.log('\x1b[31m%s\x1b[0m', `[STATUS CODE: ${status}]`);
 
-    response.status(status).send(errorResponse);
+    console.log(
+      '\x1b[31m%s\x1b[0m',
+      JSON.stringify(errorResponse, null, 2) + '\n\n\n',
+    );
+
+    // Use Fastify methods to handle response
+    response
+      .code(status) // Fastify way to set status code
+      .send(errorResponse); // Send the error response
   }
 }

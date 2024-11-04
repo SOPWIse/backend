@@ -8,13 +8,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/ExceptionFilter';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
 // import { CommonModule, LogInterceptor } from './modules/common';
 
 /**
  * These are API defaults that can be changed using environment variables,
  * it is not required to change them (see the `.env.example` file)
  */
-const API_DEFAULT_PORT = 3000;
+const API_DEFAULT_PORT = '3000';
 const API_DEFAULT_PREFIX = '';
 
 /**
@@ -75,10 +76,12 @@ async function bootstrap(): Promise<void> {
     createSwagger(app);
   }
   app.enableCors();
-
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
+  // await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
+  await app.listen({
+    port: parseInt(process.env.API_PORT || API_DEFAULT_PORT),
+  });
 }
 
 /**
