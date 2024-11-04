@@ -13,10 +13,10 @@ model SopWiseUser {
   hash      String
   name      String?
   role      Role     @default(ASSISTANT)
-  provider  String   @default("sopwise")
-  metaData  Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  metaData  Json?
+  provider  String   @default("sopwise")
 }
 
 enum Role {

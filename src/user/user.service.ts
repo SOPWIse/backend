@@ -54,4 +54,37 @@ export class UserService {
       throw new InternalServerErrorException('Failed to find user by email');
     }
   }
+
+  async getAllUser(limit: number = 10, cursor?: string) {
+    try {
+      const queryOptions: any = {
+        take: limit,
+        orderBy: { id: 'asc' },
+      };
+      if (cursor) {
+        queryOptions.skip = 1;
+        queryOptions.cursor = { id: cursor };
+      }
+      const users = await this.prisma.sopWiseUser.findMany(queryOptions);
+      const filteredUsers = users.map(({ hash, ...rest }) => rest);
+
+      const baseUrl = '/users';
+      const nextUrl =
+        users.length === limit
+          ? `${baseUrl}?cursor=${users[users.length - 1].id}`
+          : null;
+      const previousUrl = cursor ? `${baseUrl}?cursor=${users[0]?.id}` : null;
+
+      return {
+        data: filteredUsers,
+        meta: {
+          limit,
+          next: nextUrl,
+          previous: previousUrl,
+        },
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch users: ${error.message}`);
+    }
+  }
 }
