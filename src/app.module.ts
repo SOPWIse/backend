@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -9,6 +9,7 @@ import { UserService } from './user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from './prisma/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { PaginationService } from './common/pagination/pagination.service';
 
 @Module({
@@ -24,14 +25,8 @@ import { PaginationService } from './common/pagination/pagination.service';
     PaginationService,
   ],
 })
-export class AppModule {}
-
-/**
-  @Module({
-  imports: [ Other modules ],
-  controllers: [ Controllers ],
-  providers: [ Services/Providers ],
-  exports: [ Exported providers ],
-})
-export class SomeModule {}
-*/
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
