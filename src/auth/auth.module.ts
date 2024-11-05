@@ -8,12 +8,16 @@ import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from 'src/user/user.module';
 import { JwtStrategy } from './auth.strategy';
+import { PaginationModule } from 'src/common/pagination/pagination.module';
+import { PaginationService } from 'src/common/pagination/pagination.service';
 
 @Module({
   providers: [
+    PaginationService,
     AuthService,
     JwtService,
     PrismaService,
+    PaginationModule,
     UserService,
     ConfigService,
     JwtStrategy,

@@ -6,11 +6,10 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
-import { AuthController } from './auth/auth.controller';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from './prisma/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PassportModule } from '@nestjs/passport';
+import { PaginationService } from './common/pagination/pagination.service';
 
 @Module({
   imports: [AuthModule, UserModule, PrismaModule, ConfigModule.forRoot()],
@@ -22,6 +21,17 @@ import { PassportModule } from '@nestjs/passport';
     JwtService,
     PrismaService,
     ConfigService,
+    PaginationService,
   ],
 })
 export class AppModule {}
+
+/**
+  @Module({
+  imports: [ Other modules ],
+  controllers: [ Controllers ],
+  providers: [ Services/Providers ],
+  exports: [ Exported providers ],
+})
+export class SomeModule {}
+*/
