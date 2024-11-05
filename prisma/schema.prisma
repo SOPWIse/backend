@@ -24,3 +24,5 @@ enum Role {
   AUTHOR
   ASSISTANT
 }
+
+// TECHNICIAN

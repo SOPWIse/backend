@@ -78,7 +78,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
+  // await app.listen(process.env.API_PORT || API_DEFAULT_PORT, '192.168.1.5');
   await app.listen({
     port: parseInt(process.env.API_PORT || API_DEFAULT_PORT),
   });
