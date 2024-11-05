@@ -1,8 +1,11 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
   Query,
   UseGuards,
   ValidationPipe,
@@ -16,6 +19,7 @@ import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PaginationQueryDto } from 'src/common/pagination/pagination.dto';
+import { UpdateUserDto } from 'src/auth/dto/auth.update-user-dto';
 
 @Controller('user')
 export class UserController {
@@ -38,5 +42,16 @@ export class UserController {
     query: PaginationQueryDto,
   ) {
     return this.userService.getUsers(query);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Update user' })
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateUser(id, updateUserDto);
   }
 }

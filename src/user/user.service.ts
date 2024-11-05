@@ -1,8 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Role, SopWiseUser } from '@prisma/client';
 import { PaginationQueryDto } from 'src/common/pagination/pagination.dto';
 import { PaginationService } from 'src/common/pagination/pagination.service';
+import { UpdateUserDto } from 'src/auth/dto/auth.update-user-dto';
 
 @Injectable()
 export class UserService {
@@ -58,6 +63,20 @@ export class UserService {
       console.log(error);
       throw new InternalServerErrorException('Failed to find user by email');
     }
+  }
+
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.sopWiseUser.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    const res = await this.prisma.sopWiseUser.update({
+      where: { id },
+      data: updateUserDto,
+    });
+    delete res.hash;
+    return res;
   }
 
   // async getAllUser(limit: number = 10, cursor?: string) {
