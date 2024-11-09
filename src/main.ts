@@ -22,8 +22,8 @@ const API_DEFAULT_PREFIX = '';
  *
  * @todo Change the constants below following your API requirements
  */
-const SWAGGER_TITLE = 'Passenger API';
-const SWAGGER_DESCRIPTION = 'API used for passenger management';
+const SWAGGER_TITLE = 'SOPWISE';
+const SWAGGER_DESCRIPTION = 'API documentation for the SOPWISE project';
 const SWAGGER_PREFIX = '/docs';
 
 /**
