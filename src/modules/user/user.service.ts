@@ -3,11 +3,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { Role, SopWiseUser } from '@prisma/client';
 import { PaginationQueryDto } from 'src/common/pagination/pagination.dto';
 import { PaginationService } from 'src/common/pagination/pagination.service';
-import { UpdateUserDto } from 'src/auth/dto/auth.update-user-dto';
+import { UpdateUserDto } from '@sopwise/modules/auth/dto/auth.update-user-dto';
+import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Injectable()
 export class UserService {

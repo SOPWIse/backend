@@ -3,8 +3,8 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { AuthService } from 'src/auth/auth.service';
-import { JwtStrategy } from 'src/auth/auth.strategy';
+import { AuthService } from '@sopwise/modules/auth/auth.service';
+import { JwtStrategy } from '@sopwise/modules/auth/auth.strategy';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationModule } from 'src/common/pagination/pagination.module';
 

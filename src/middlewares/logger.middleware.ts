@@ -1,6 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { FastifyRequest } from 'fastify';
-import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponse } from 'http';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {

@@ -10,7 +10,7 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
+import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
 import { GetCurrentUser } from './decorator/current-user.decorator';
 import { Role, SopWiseUser } from '@prisma/client';
 import { UserService } from './user.service';
@@ -19,7 +19,7 @@ import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationQueryDto } from 'src/common/pagination/pagination.dto';
-import { UpdateUserDto } from 'src/auth/dto/auth.update-user-dto';
+import { UpdateUserDto } from '@sopwise/modules/auth/dto/auth.update-user-dto';
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
