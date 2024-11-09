@@ -11,9 +11,10 @@ import { PrismaService } from './prisma/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { PaginationService } from './common/pagination/pagination.service';
+import { HealthModule } from './health/health.module';
 
 @Module({
-  imports: [AuthModule, UserModule, PrismaModule, ConfigModule.forRoot()],
+  imports: [AuthModule, UserModule, PrismaModule, ConfigModule.forRoot(), HealthModule],
   controllers: [AppController],
   providers: [
     AppService,

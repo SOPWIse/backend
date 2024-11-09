@@ -7,9 +7,7 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './common/ExceptionFilter';
-import { LoggerMiddleware } from './middlewares/logger.middleware';
-// import { CommonModule, LogInterceptor } from './modules/common';
+import { HttpExceptionFilter } from './common/exceptions/exception-filter';
 
 /**
  * These are API defaults that can be changed using environment variables,

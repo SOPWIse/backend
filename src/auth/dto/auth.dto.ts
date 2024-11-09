@@ -42,3 +42,16 @@ export class RegisterDto {
   @IsOptional()
   metaData: string;
 }
+
+export class LoginDto {
+  @IsNotEmpty()
+  @ApiProperty({ example: 'test@test.com' })
+  @IsEmail({}, { message: 'given email is invalid' })
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(4, 50, { message: 'Password must be between 4 and 50 characters' })
+  @ApiProperty({ example: 'password' })
+  password: string;
+}

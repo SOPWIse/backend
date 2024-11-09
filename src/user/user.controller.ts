@@ -17,16 +17,17 @@ import { UserService } from './user.service';
 import { query } from 'winston';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationQueryDto } from 'src/common/pagination/pagination.dto';
 import { UpdateUserDto } from 'src/auth/dto/auth.update-user-dto';
-
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
+  @ApiOperation({ summary: 'Get current user' })
   getCurrentUser(@GetCurrentUser() user: SopWiseUser) {
     return user;
   }
@@ -47,7 +48,7 @@ export class UserController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Update user' })
+  @ApiOperation({ summary: 'Update user by id' })
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
