@@ -3,12 +3,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../../prisma/prisma.service';
-import { UserService } from '../user/user.service';
-import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
-import { Login, Register } from '../../types/auth.types';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from '@sopwise/modules/user/user.service';
+import { PrismaService } from '@sopwise/prisma/prisma.service';
+import { Login, Register } from '@sopwise/types/auth.types';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {

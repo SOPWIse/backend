@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Role, SopWiseUser } from '@prisma/client';
-import { PaginationQueryDto } from 'src/common/pagination/pagination.dto';
-import { PaginationService } from 'src/common/pagination/pagination.service';
+import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
+import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { UpdateUserDto } from '@sopwise/modules/auth/dto/auth.update-user-dto';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 

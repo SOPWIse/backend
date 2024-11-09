@@ -1,16 +1,16 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
-import { PrismaModule } from '../prisma/prisma.module';
-import { AuthService } from './auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { LoggerMiddleware } from '../middlewares/logger.middleware';
-import { PaginationService } from '../common/pagination/pagination.service';
+import { JwtService } from '@nestjs/jwt';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { UserModule } from './user/user.module';
-import { UserService } from './user/user.service';
-import { HealthModule } from './health/health.module';
+import { PaginationService } from '@sopwise/common/pagination/pagination.service';
+import { LoggerMiddleware } from '@sopwise/middlewares/logger.middleware';
+import { AuthModule } from '@sopwise/modules/auth/auth.module';
+import { AuthService } from '@sopwise/modules/auth/auth.service';
+import { HealthModule } from '@sopwise/modules/health/health.module';
+import { UserModule } from '@sopwise/modules/user/user.module';
+import { UserService } from '@sopwise/modules/user/user.service';
+import { PrismaModule } from '@sopwise/prisma/prisma.module';
+import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Module({
   imports: [

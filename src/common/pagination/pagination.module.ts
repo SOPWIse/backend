@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PaginationService } from './pagination.service';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PaginationService } from '@sopwise/common/pagination/pagination.service';
+import { PrismaModule } from '@sopwise/prisma/prisma.module';
 
 @Module({
   imports: [PrismaModule],

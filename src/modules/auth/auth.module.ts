@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './auth.strategy';
-import { PaginationModule } from 'src/common/pagination/pagination.module';
-import { PaginationService } from 'src/common/pagination/pagination.service';
-import { UserService } from '../user/user.service';
-import { UserModule } from '../user/user.module';
+import { PaginationModule } from '@sopwise/common/pagination/pagination.module';
+import { PaginationService } from '@sopwise/common/pagination/pagination.service';
+import { AuthController } from '@sopwise/modules/auth/auth.controller';
+import { AuthService } from '@sopwise/modules/auth/auth.service';
+import { JwtStrategy } from '@sopwise/modules/auth/auth.strategy';
+import { UserModule } from '@sopwise/modules/user/user.module';
+import { UserService } from '@sopwise/modules/user/user.service';
+import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Module({
   providers: [

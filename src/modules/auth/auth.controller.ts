@@ -1,18 +1,18 @@
 import {
-  Controller,
-  Post,
-  UseGuards,
   Body,
+  Controller,
   HttpCode,
   HttpStatus,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { RolesGuard } from '../../roles/roles.guard';
-import { Roles } from '../../roles/roles.decorator';
-import { Role } from '@prisma/client';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
-import { JwtAuthGuard } from './guard/jwt.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { AuthService } from '@sopwise/modules/auth/auth.service';
+import { LoginDto, RegisterDto } from '@sopwise/modules/auth/dto/auth.dto';
+import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
+import { Roles } from '@sopwise/roles/roles.decorator';
+import { RolesGuard } from '@sopwise/roles/roles.guard';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {

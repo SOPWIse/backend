@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { PaginationModule } from '@sopwise/common/pagination/pagination.module';
 import { AuthService } from '@sopwise/modules/auth/auth.service';
 import { JwtStrategy } from '@sopwise/modules/auth/auth.strategy';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationModule } from 'src/common/pagination/pagination.module';
+import { UserController } from '@sopwise/modules/user/user.controller';
+import { UserService } from '@sopwise/modules/user/user.service';
+import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Module({
   imports: [PaginationModule],

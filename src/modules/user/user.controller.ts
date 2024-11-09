@@ -10,16 +10,15 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
-import { GetCurrentUser } from './decorator/current-user.decorator';
-import { Role, SopWiseUser } from '@prisma/client';
-import { UserService } from './user.service';
-import { query } from 'winston';
-import { RolesGuard } from 'src/roles/roles.guard';
-import { Roles } from 'src/roles/roles.decorator';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationQueryDto } from 'src/common/pagination/pagination.dto';
+import { Role, SopWiseUser } from '@prisma/client';
+import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { UpdateUserDto } from '@sopwise/modules/auth/dto/auth.update-user-dto';
+import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
+import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
+import { UserService } from '@sopwise/modules/user/user.service';
+import { Roles } from '@sopwise/roles/roles.decorator';
+import { RolesGuard } from '@sopwise/roles/roles.guard';
 @ApiTags('Users')
 @Controller('user')
 export class UserController {

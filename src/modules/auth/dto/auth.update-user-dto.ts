@@ -1,7 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsOptional, IsString, Length } from 'class-validator';
-import { RegisterDto } from './auth.dto';
 import { Role } from '@prisma/client';
+import { RegisterDto } from '@sopwise/modules/auth/dto/auth.dto';
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(RegisterDto) {
   @IsOptional()

@@ -8,6 +8,9 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "imports": {
+    "@sopwise/*": "./src/*"
+  },
   "scripts": {
     "build": "npx @nestjs/cli build",
     "clean": "rm -rf ./dist",

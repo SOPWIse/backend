@@ -1,12 +1,15 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
-  BadRequestException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationQueryDto } from './pagination.dto';
-import { BaseResponse, PaginationMeta } from './pagination.inteface';
+import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
+import {
+  BaseResponse,
+  PaginationMeta,
+} from '@sopwise/common/pagination/pagination.inteface';
+import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Injectable()
 export class PaginationService {

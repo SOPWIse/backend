@@ -1,6 +1,6 @@
 // health.service.ts
 import { Injectable } from '@nestjs/common';
-import { HealthCheckResponse } from './health.types';
+import { HealthCheckResponse } from '@sopwise/modules/health/health.types';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Injectable()

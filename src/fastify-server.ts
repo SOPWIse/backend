@@ -1,16 +1,16 @@
 import { DynamicModule, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { HelmetConfig } from './config/security/helmet.config';
-import { CsrfProtectionConfig } from './config/security/csrf-protection.config';
-import { CompressionConfig } from './config/compression/compression.config';
-import { SwaggerConfig } from './config/swagger.config.ts/swagger.config';
+import { CompressionConfig } from '@sopwise/config/compression/compression.config';
+import { CsrfProtectionConfig } from '@sopwise/config/security/csrf-protection.config';
+import { HelmetConfig } from '@sopwise/config/security/helmet.config';
+import { SwaggerConfig } from '@sopwise/config/swagger.config.ts/swagger.config';
 import { useContainer } from 'class-validator';
 import { contentParser } from 'fastify-multer';
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
 
 export default class FastifyServerApplication {
   private API_DEFAULT_PORT = '3000';
