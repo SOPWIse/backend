@@ -15,6 +15,3 @@ export class LoggerMiddleware implements NestMiddleware {
     next();
   }
 }
-
-// PUNB0066200
-// 0662000106375875
