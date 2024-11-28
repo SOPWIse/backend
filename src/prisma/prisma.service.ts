@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
+import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
 
 @Injectable()
 export class PrismaService
@@ -21,5 +22,15 @@ export class PrismaService
   }
   async onModuleDestroy() {
     await this.$disconnect();
+  }
+
+  async safeCreate<T, U>(model: keyof PrismaClient, data: U): Promise<T> {
+    try {
+      return await (this[model as keyof PrismaClient] as any).create({
+        data,
+      });
+    } catch (error) {
+      handlePrismaError(error);
+    }
   }
 }

@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Approval, Status } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
@@ -21,54 +17,21 @@ export class ApprovalsService {
     approvedBy,
     contentId,
     description,
-    requestedId,
+    authorId,
     status,
   }: CreateApproval) {
-    try {
-      const requestedUser = await this.prisma.sopWiseUser.findUnique({
-        where: { id: requestedId },
-      });
-
-      if (!requestedUser) {
-        throw new NotFoundException('Requested user not found');
-      }
-      if (approvedBy) {
-        const approvedByUser = await this.prisma.sopWiseUser.findUnique({
-          where: { id: approvedBy },
-        });
-
-        if (!approvedByUser) {
-          throw new NotFoundException('Approved by user not found');
-        }
-      }
-
-      return this.prisma.approval.create({
-        data: {
-          requestedId: requestedId,
-          description: description,
-          status: status || Status.PENDING,
-          approvedBy: approvedBy,
-          contentId: contentId,
-          allowedRole: allowedRole || [],
-        },
-      });
-    } catch (error) {
-      throw new BadRequestException('Failed to create approval');
-    }
+    return this.prisma.safeCreate<Approval, CreateApproval>('approval', {
+      authorId: authorId,
+      description: description,
+      status: status || Status.PENDING,
+      approvedBy: approvedBy,
+      contentId: contentId,
+      allowedRole: allowedRole || [],
+    });
   }
 
   async updateApproval(id: string, data: Partial<CreateApproval>) {
     try {
-      if (data.approvedBy) {
-        const approvedByUser = await this.prisma.sopWiseUser.findUnique({
-          where: { id: data.approvedBy },
-        });
-
-        if (!approvedByUser) {
-          throw new NotFoundException('Approved by user not found');
-        }
-      }
-
       return this.prisma.approval.update({
         where: { id },
         data: {
@@ -86,12 +49,26 @@ export class ApprovalsService {
   async listApprovals(query: PaginationQueryDto) {
     try {
       return this.pagination.paginate<Approval>('Approval', query, {
-        requestedId: true,
+        authorId: true,
         description: true,
         status: true,
         approvedBy: true,
         contentId: true,
         allowedRole: true,
+        approvedByUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        requestedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       });
     } catch (error) {
       throw new BadRequestException('Failed to get approvals');

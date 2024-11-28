@@ -1,23 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Role, Status } from '@prisma/client';
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateApprovalDto {
-  @ApiProperty({
-    description: 'ID of the user requesting the approval',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsNotEmpty()
-  @IsUUID()
-  requestedId: string;
-
   @ApiProperty({
     description: 'Description of the approval request',
     example: 'Request for project access',

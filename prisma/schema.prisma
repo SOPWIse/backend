@@ -25,7 +25,7 @@ model SopWiseUser {
 
 model Approval {
   id           String       @id @default(uuid())
-  requestedId  String       @map("requested_id")
+  authorId     String       @map("author_id")
   description  String
   status       Status
   contentId    String?      @map("content_id")
@@ -36,7 +36,7 @@ model Approval {
 
   
   approvedByUser SopWiseUser? @relation("approver", fields: [approvedBy], references: [id])
-  requestedUser  SopWiseUser  @relation("requester", fields: [requestedId], references: [id])
+  requestedUser  SopWiseUser  @relation("requester", fields: [authorId], references: [id])
 }
 
 enum Role {

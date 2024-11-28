@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { Role, SopWiseUser } from '@prisma/client';
+import { Prisma, Role, SopWiseUser } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { UpdateUserDto } from '@sopwise/modules/auth/dto/auth.update-user-dto';
@@ -24,23 +24,19 @@ export class UserService {
     provider?: string,
     metaData?: string,
   ) {
-    try {
-      const res = await this.prisma.sopWiseUser.create({
-        data: {
-          email,
-          name,
-          hash,
-          role,
-          provider: provider ?? 'sopwise',
-          metaData,
-        },
-      });
-      delete res.hash;
-      return res;
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException('Failed to create user');
-    }
+    const res = await this.prisma.safeCreate<
+      SopWiseUser,
+      Prisma.SopWiseUserCreateInput
+    >('sopWiseUser', {
+      email,
+      name,
+      hash,
+      role,
+      provider: provider ?? 'sopwise',
+      metaData,
+    });
+    delete res.hash;
+    return res;
   }
 
   async findByEmail(email: string) {
@@ -49,8 +45,7 @@ export class UserService {
         where: { email },
       });
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException('Failed to find user by email');
+      throw new NotFoundException('Failed to find user by email');
     }
   }
 
@@ -79,40 +74,6 @@ export class UserService {
     return res;
   }
 
-  // async getAllUser(limit: number = 10, cursor?: string) {
-  //   try {
-  //     const queryOptions: any = {
-  //       take: limit,
-  //       orderBy: { id: 'asc' },
-  //     };
-  //     if (cursor) {
-  //       queryOptions.skip = 1;
-  //       queryOptions.cursor = { id: cursor };
-  //     }
-  //     const users = await this.prisma.sopWiseUser.findMany(queryOptions);
-  //     const filteredUsers = users.map(({ hash, ...rest }) => rest);
-
-  //     const baseUrl = '/users';
-  //     const nextUrl =
-  //       users.length === limit
-  //         ? `${baseUrl}?cursor=${users[users.length - 1].id}`
-  //         : null;
-  //     const previousUrl = cursor ? `${baseUrl}?cursor=${users[0]?.id}` : null;
-
-  //     return {
-  //       data: filteredUsers,
-  //       meta: {
-  //         limit,
-  //         next: nextUrl,
-  //         previous: previousUrl,
-  //       },
-  //     };
-  //   } catch (error) {
-  //     throw new Error(`Failed to fetch users: ${error.message}`);
-  //   }
-  // }
-
-  // In UserService:
   async getUsers(query: PaginationQueryDto) {
     return this.paginationService.paginate<SopWiseUser>('SopWiseUser', query, {
       id: true,

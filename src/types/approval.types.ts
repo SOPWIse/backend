@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
 export const createApprovalSchema = z.object({
-  requestedId: z
-    .string()
-    .uuid({ message: 'Requested ID must be a valid UUID' }),
+  authorId: z.string().uuid({ message: 'Requested ID must be a valid UUID' }),
   description: z.string().optional(),
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
   approvedBy: z
