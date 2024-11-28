@@ -11,6 +11,8 @@ import { UserModule } from '@sopwise/modules/user/user.module';
 import { UserService } from '@sopwise/modules/user/user.service';
 import { PrismaModule } from '@sopwise/prisma/prisma.module';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
+import { ApprovalsService } from './approvals/approvals.service';
+import { ApprovalsModule } from './approvals/approvals.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { PrismaService } from '@sopwise/prisma/prisma.service';
         limit: 500,
       },
     ]),
+    ApprovalsModule,
   ],
   providers: [
     AuthService,
@@ -34,6 +37,7 @@ import { PrismaService } from '@sopwise/prisma/prisma.service';
     PrismaService,
     ConfigService,
     PaginationService,
+    ApprovalsService,
   ],
 })
 export class AppModule implements NestModule {

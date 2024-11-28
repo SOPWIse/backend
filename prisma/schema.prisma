@@ -17,6 +17,26 @@ model SopWiseUser {
   updatedAt DateTime @updatedAt
   metaData  Json?
   provider  String   @default("sopwise")
+
+  
+  approvedApprovals Approval[] @relation("approver")
+  requestedApprovals Approval[] @relation("requester")
+}
+
+model Approval {
+  id           String       @id @default(uuid())
+  requestedId  String       @map("requested_id")
+  description  String
+  status       Status
+  contentId    String?      @map("content_id")
+  approvedBy   String?      @map("approved_by")
+  allowedRole  Role[]       
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  
+  approvedByUser SopWiseUser? @relation("approver", fields: [approvedBy], references: [id])
+  requestedUser  SopWiseUser  @relation("requester", fields: [requestedId], references: [id])
 }
 
 enum Role {
@@ -25,4 +45,8 @@ enum Role {
   ASSISTANT
 }
 
-// TECHNICIAN
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
