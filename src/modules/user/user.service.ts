@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, Role, SopWiseUser } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
@@ -56,7 +52,19 @@ export class UserService {
       });
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException('Failed to find user by email');
+      throw new NotFoundException('Failed to find user by email');
+    }
+  }
+
+  async getUserById(id: string) {
+    try {
+      const res = await this.prisma.sopWiseUser.findUnique({
+        where: { id },
+      });
+      delete res.hash;
+      return res;
+    } catch (e) {
+      throw new NotFoundException("User doesn't exist");
     }
   }
 
