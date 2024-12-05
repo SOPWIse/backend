@@ -48,6 +48,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update user by id' })
+  @HttpCode(HttpStatus.OK)
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -58,6 +59,7 @@ export class UserController {
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Get user by id' })
+  @HttpCode(HttpStatus.OK)
   @Roles(Role.ADMIN, Role.ASSISTANT, Role.AUTHOR)
   async getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);

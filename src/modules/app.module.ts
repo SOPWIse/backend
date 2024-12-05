@@ -14,6 +14,7 @@ import { PrismaModule } from '@sopwise/prisma/prisma.module';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { ApprovalsModule } from './approvals/approvals.module';
 import { ApprovalsService } from './approvals/approvals.service';
+import { SopModule } from './sop/sop.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ApprovalsService } from './approvals/approvals.service';
       },
     ]),
     ApprovalsModule,
+    SopModule,
   ],
   providers: [
     AuthService,

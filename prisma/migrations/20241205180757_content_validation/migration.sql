@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Sop" ALTER COLUMN "meta_data" DROP NOT NULL,
+ALTER COLUMN "content" DROP NOT NULL,
+ALTER COLUMN "content_url" DROP NOT NULL;
