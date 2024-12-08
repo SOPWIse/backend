@@ -28,7 +28,7 @@ export const sopSchema = z.object({
     .string()
     .min(1, 'Content is required')
     .max(1000000, 'Content is too long')
-    .optional(),
+    .default(''),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),
   contentUrl: z
