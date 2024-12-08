@@ -13,6 +13,25 @@ export class SopService {
     private readonly paginationService: PaginationService,
   ) {}
 
+  select = {
+    id: true,
+    title: true,
+    description: true,
+    status: true,
+    isListed: true,
+    publishedAt: true,
+    createdAt: true,
+    updatedAt: true,
+    contentUrl: true,
+    author: {
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    },
+  };
+
   async createSop(body: CreateSop) {
     const request = sopSchema.parse(body);
     return await this.prisma.safeCreate<Sop, CreateSop>('sop', request);
@@ -28,6 +47,7 @@ export class SopService {
     try {
       return await this.prisma.sop.findFirst({
         where: { id },
+        select: { ...this.select, content: true },
       });
     } catch (e) {
       handlePrismaError(e);
@@ -35,22 +55,7 @@ export class SopService {
   }
   async listSop(query: PaginationQueryDto) {
     return await this.paginationService.paginate('Sop', query, {
-      id: true,
-      title: true,
-      description: true,
-      status: true,
-      isListed: true,
-      publishedAt: true,
-      createdAt: true,
-      updatedAt: true,
-      contentUrl: true,
-      author: {
-        select: {
-          id: true,
-          email: true,
-          name: true,
-        },
-      },
+      ...this.select,
     });
   }
 
