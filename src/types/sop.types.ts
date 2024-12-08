@@ -26,7 +26,7 @@ export const sopSchema = z.object({
   metaData: z.record(z.any()).optional(),
   content: z
     .string()
-    .min(1, 'Content is required')
+    .min(0, 'Content is required')
     .max(1000000, 'Content is too long')
     .default(''),
   createdAt: z.date().default(new Date()),
