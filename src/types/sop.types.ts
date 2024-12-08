@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 //
-const SopStatusEnum = z.enum(['DRAFT', 'PUBLISHED', 'LISTED']);
+const SopStatusEnum = z.enum(['DRAFT', 'PUBLISHED', 'LISTED', 'REJECTED']);
 
 export const sopSchema = z.object({
   id: z.string().uuid().optional(),

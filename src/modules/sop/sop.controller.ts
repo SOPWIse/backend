@@ -118,4 +118,40 @@ export class SopController {
   ) {
     return await this.sopService.createSop({ authorId: user.id, ...body });
   }
+
+  @Patch('/approve/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Approve a SOP',
+    description: 'Approves a SOP. Only accessible to ADMIN and AUTHOR roles.',
+  })
+  async approve(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser) {
+    return this.sopService.approveOnId(id, user.id);
+  }
+
+  @Patch('/reject/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Reject a SOP',
+    description: 'Rejects a SOP. Only accessible to ADMIN and AUTHOR roles.',
+  })
+  async reject(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser) {
+    return this.sopService.rejectOnId(id, user.id);
+  }
+
+  @Patch('/publish/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Publish a SOP',
+    description: 'Publishes a SOP. Only accessible to ADMIN and AUTHOR roles.',
+  })
+  async publish(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser) {
+    return this.sopService.publishSop(id, user.id);
+  }
 }

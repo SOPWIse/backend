@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Approval, Status } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { CreateApproval } from '@sopwise/types/approval.types';
+import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
 
 @Injectable()
 export class ApprovalsService {
@@ -42,7 +43,41 @@ export class ApprovalsService {
         },
       });
     } catch (error) {
-      throw new BadRequestException('Failed to update approval');
+      handlePrismaError(error);
+    }
+  }
+
+  async findById(id: string) {
+    try {
+      return await this.prisma.approval.findFirst({
+        where: { id },
+      });
+    } catch (error) {
+      handlePrismaError(error);
+    }
+  }
+
+  async findByContentId(contentId: string) {
+    try {
+      return await this.prisma.approval.findFirst({
+        where: { contentId },
+        select: {
+          contentId: true,
+          createdAt: true,
+          updatedAt: true,
+          status: true,
+          id: true,
+          approvedByUser: {
+            select: {
+              email: true,
+              name: true,
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      return null;
     }
   }
 
@@ -71,7 +106,7 @@ export class ApprovalsService {
         },
       });
     } catch (error) {
-      throw new BadRequestException('Failed to get approvals');
+      handlePrismaError(error);
     }
   }
 }
