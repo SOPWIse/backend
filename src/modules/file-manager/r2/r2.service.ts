@@ -38,7 +38,6 @@ export class R2Service {
     isPublic = true,
   }: R2UploadArgs): Promise<string> {
     try {
-      console.log('Trying to upload');
       const commandInput: PutObjectCommandInput = {
         Key: objectKey,
         Bucket: bucket,
@@ -49,9 +48,7 @@ export class R2Service {
 
       // if (isPublic) commandInput.ACL = 'public-read'
       const command = new PutObjectCommand(commandInput);
-
       const send = await this.r2Factory.client.send(command);
-      console.log('\nSEND COMMAND\n', send);
       return `https://${this.ACCOUNT_ID}.r2.cloudflarestorage.com/${this.BUCKET_NAME}/${objectKey}`;
     } catch (error) {
       console.log(error);

@@ -175,10 +175,13 @@ export class SopController {
     description: 'Publishes a SOP. Only accessible to ADMIN and AUTHOR roles.',
   })
   async publish(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser) {
-    return this.sopService.publishSop(id, user.id);
+    return await this.sopService.publishSop(id, user.id);
   }
 
   @Post('/upload')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(FastifyFileInterceptor('file', {}))
   async upload(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
     if (!file) {
