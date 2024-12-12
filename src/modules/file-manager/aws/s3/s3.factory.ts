@@ -8,12 +8,9 @@ export type IGetSignedUrl = { getSignedUrl: typeof getSignedUrl };
 export class S3ClientFactory {
   constructor(private configService: ConfigService) {}
   get client(): S3 {
-    // const accessKeyId = 'AKIAY5KMC4GMU7F5D5GH'
-    const accessKeyId = this.configService.get<string>('aws.accessKeyId');
-    const secretAccessKey = this.configService?.get<string>(
-      'aws.secretAccessKey',
-    );
-    const region = this.configService?.get<string>('aws.region');
+    const accessKeyId = this.configService.get<string>('ACCESS_KEY');
+    const secretAccessKey = this.configService?.get<string>('SECRET_KEY');
+    const region = this.configService?.get<string>('REGION');
 
     const options: S3ClientConfig = {
       region: region,

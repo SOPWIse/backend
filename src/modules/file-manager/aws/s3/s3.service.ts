@@ -39,13 +39,15 @@ export class S3Service {
         ContentDisposition: 'inline',
       };
 
-      // if (isPublic) commandInput.ACL = 'public-read'
+      if (isPublic) commandInput.ACL = 'public-read';
       const command = new PutObjectCommand(commandInput);
 
       await this.s3Factory.client.send(command);
       const encodeFileName = encodeURIComponent(objectKey);
+      console.log(`https://${bucket}.s3.amazonaws.com/${encodeFileName}`);
       return `https://${bucket}.s3.amazonaws.com/${encodeFileName}`;
     } catch (error) {
+      console.log(error);
       throw new Error('An error occurred uploading file to storage');
     }
   }
