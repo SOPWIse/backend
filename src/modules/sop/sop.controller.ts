@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -8,9 +9,13 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
+
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -18,19 +23,37 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Role, SopWiseUser } from '@prisma/client';
+import { FastifyFileInterceptor } from '@sopwise/common/interceptors/fastify-file-interceptor';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
+import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.service';
 import { CreateSopDto } from '@sopwise/modules/sop/dto/sop.dto';
 import { SopService } from '@sopwise/modules/sop/sop.service';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
 import { Roles } from '@sopwise/roles/roles.decorator';
 import { RolesGuard } from '@sopwise/roles/roles.guard';
+import multer from 'fastify-multer';
+
+const upload = multer({ dest: 'uploads/' });
+export const imageFileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  callback,
+) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    return callback(new Error('Only image files are allowed!'), false);
+  }
+  callback(null, true);
+};
 
 @ApiTags('SOPs')
-@ApiBearerAuth() // Adds JWT Bearer token authorization header in Swagger UI
+@ApiBearerAuth()
 @Controller('sop')
 export class SopController {
-  constructor(private readonly sopService: SopService) {}
+  constructor(
+    private readonly sopService: SopService,
+    private readonly fileManager: FileManagerService,
+  ) {}
 
   @Get('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -152,6 +175,19 @@ export class SopController {
     description: 'Publishes a SOP. Only accessible to ADMIN and AUTHOR roles.',
   })
   async publish(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser) {
-    return this.sopService.publishSop(id, user.id);
+    return await this.sopService.publishSop(id, user.id);
+  }
+
+  @Post('/upload')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FastifyFileInterceptor('file', {}))
+  async upload(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('File is not present');
+    }
+
+    return await this.fileManager.uploadFile(file, true);
   }
 }

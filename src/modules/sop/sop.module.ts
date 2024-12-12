@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { ApprovalsService } from '@sopwise/modules/approvals/approvals.service';
+import { FileManagerModule } from '@sopwise/modules/file-manager/file-manager.module';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { SopController } from './sop.controller';
 import { SopService } from './sop.service';
@@ -15,6 +16,6 @@ import { SopService } from './sop.service';
     ConfigService,
     ApprovalsService,
   ],
-  imports: [],
+  imports: [FileManagerModule],
 })
 export class SopModule {}

@@ -33,6 +33,7 @@ export default class FastifyServerApplication {
     useContainer(this.app.select(appModule as DynamicModule), {
       fallbackOnErrors: true,
     });
+    // await this.app.register(multipart);
     await this.app.register(contentParser);
   }
 
@@ -44,6 +45,7 @@ export default class FastifyServerApplication {
         rawBody: true,
       },
     );
+
     const configService = this.app.get(ConfigService);
     const PORT = configService.get('PORT');
     await this.configureServices(appModule);

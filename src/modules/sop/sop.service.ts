@@ -4,9 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Sop } from '@prisma/client';
+import fileConverter from '@sopwise/common/file-converter/file-converter';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { ApprovalsService } from '@sopwise/modules/approvals/approvals.service';
+import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.service';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { CreateSop, sopSchema } from '@sopwise/types/sop.types';
 import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
@@ -17,6 +19,7 @@ export class SopService {
     private readonly prisma: PrismaService,
     private readonly paginationService: PaginationService,
     private readonly approvalService: ApprovalsService,
+    private readonly fileManager: FileManagerService,
   ) {}
 
   select = {
@@ -71,24 +74,40 @@ export class SopService {
       ...this.select,
     });
   }
+  //  Don't add try catch block in this function
+  async uploadFile(id: string) {
+    const content = await this.findById(id);
+    const file = await fileConverter.generatePdfAsMulterFile(
+      content.title,
+      content.content,
+    );
+    const url = await this.fileManager.uploadFile(file, true);
+    return url;
+  }
 
   async publishSop(id: string, authorId: string) {
     try {
-      return await this.prisma.$transaction(async (transaction) => {
-        await this.approvalService.createApproval({
-          allowedRole: ['ADMIN'],
-          authorId: authorId,
-          contentId: id,
-          description: 'Default',
-          status: 'PENDING',
-        });
-        return await transaction.sop.update({
-          where: { id },
-          data: {
-            status: 'PUBLISHED',
-          },
-        });
-      });
+      return await this.prisma.$transaction(
+        async (transaction) => {
+          const url = await this.uploadFile(id);
+          await this.approvalService.createApproval({
+            allowedRole: ['ADMIN'],
+            authorId: authorId,
+            contentId: id,
+            description: 'Default',
+            status: 'PENDING',
+          });
+
+          return await transaction.sop.update({
+            where: { id },
+            data: {
+              status: 'PUBLISHED',
+              contentUrl: url,
+            },
+          });
+        },
+        { maxWait: 10000, timeout: 10000 },
+      );
     } catch (e) {
       handlePrismaError(e);
     }
@@ -101,7 +120,6 @@ export class SopService {
     const approval = await this.approvalService.findByContentId(id);
     const author = await this.getAuthorOfContent(id);
 
-    console.log({ author, userId });
     if (!approval) {
       throw new NotFoundException('Content is not submitted for approval');
     } else if (author.id === userId) {
