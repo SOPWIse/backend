@@ -1,5 +1,9 @@
-import { IntersectionType, PartialType } from '@nestjs/mapped-types';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiResponseProperty,
+  IntersectionType,
+  PartialType,
+} from '@nestjs/swagger';
 import { BaseUpdateDTO } from '@sopwise/common/models/base-model';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces';
 import { IsOptional, IsString } from 'class-validator';

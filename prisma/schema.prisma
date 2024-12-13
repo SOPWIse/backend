@@ -8,53 +8,61 @@ datasource db {
 }
 
 model SopWiseUser {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  hash      String
-  name      String?
-  role      Role     @default(ASSISTANT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  metaData  Json?
-  provider  String   @default("sopwise")
-
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  hash               String
+  name               String?
+  role               Role       @default(ASSISTANT)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  metaData           Json?
+  provider           String     @default("sopwise")
   approvedApprovals  Approval[] @relation("approver")
   requestedApprovals Approval[] @relation("requester")
   Sop                Sop[]
 }
 
 model Approval {
-  id          String   @id @default(uuid())
-  authorId    String   @map("author_id")
-  description String
-  status      Status
-  contentId   String?  @map("content_id")
-  approvedBy  String?  @map("approved_by")
-  allowedRole Role[]
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
+  id             String       @id @default(uuid())
+  description    String
+  status         Status
+  approvedBy     String?      @map("approved_by")
+  allowedRole    Role[]
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  contentId      String?      @map("content_id")
+  authorId       String       @map("author_id")
   approvedByUser SopWiseUser? @relation("approver", fields: [approvedBy], references: [id])
   requestedUser  SopWiseUser  @relation("requester", fields: [authorId], references: [id])
 }
 
 model Sop {
-  id          String    @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   description String
   status      String
-  category    String?   @map("category")
-  isListed    Boolean   @map("is_listed")
-  isDeleted   Boolean   @map("is_deleted")
-  publishedAt DateTime? @map("published_at")
-  metaData    Json?     @map("meta_data")
-  authorId    String    @map("author_id")
-  content     String?   @db.Text
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  contentUrl  String?   @map("content_url")
+  category    String?     @map("category")
+  isListed    Boolean     @map("is_listed")
+  isDeleted   Boolean     @map("is_deleted")
+  publishedAt DateTime?   @map("published_at")
+  metaData    Json?       @map("meta_data")
+  authorId    String      @map("author_id")
+  content     String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  contentUrl  String?     @map("content_url")
+  author      SopWiseUser @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
 
-  author SopWiseUser @relation(fields: [authorId], references: [id], onDelete: Cascade)
+model FileSettings {
+  id         String   @id
+  userId     String
+  file       String
+  title      String
+  visibility String
+  category   String   @default("SOP")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
 }
 
 enum Role {

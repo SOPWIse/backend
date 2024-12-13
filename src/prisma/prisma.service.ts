@@ -30,6 +30,7 @@ export class PrismaService
         data,
       });
     } catch (error) {
+      console.log('>>>>>>', error);
       handlePrismaError(error);
     }
   }
