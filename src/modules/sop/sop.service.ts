@@ -22,7 +22,7 @@ export class SopService {
     private readonly fileManager: FileManagerService,
   ) {}
 
-  select = {
+  private readonly select = {
     id: true,
     title: true,
     description: true,

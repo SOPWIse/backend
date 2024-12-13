@@ -73,7 +73,8 @@ export class AuthService {
     if (!user) {
       user = await this.register(ssoData);
     }
-    return user;
+    const { hash, ...rest } = user;
+    return rest;
   }
 
   private async signToken(
