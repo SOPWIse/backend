@@ -150,6 +150,6 @@ export class FileManagerService {
 
   private generateObjectKey(userId: string, fileName: string): string {
     const timestamp = Date.now();
-    return `user_${userId}/files/${fileName}/${timestamp}`;
+    return `user_${userId}:${timestamp}`;
   }
 }
