@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -9,10 +8,7 @@ import {
   Patch,
   Post,
   Query,
-  Req,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 
@@ -23,10 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Role, SopWiseUser } from '@prisma/client';
-import { FastifyFileInterceptor } from '@sopwise/common/interceptors/fastify-file-interceptor';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
-import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.service';
 import { CreateSopDto } from '@sopwise/modules/sop/dto/sop.dto';
 import { SopService } from '@sopwise/modules/sop/sop.service';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
@@ -50,10 +44,7 @@ export const imageFileFilter = (
 @ApiBearerAuth()
 @Controller('sop')
 export class SopController {
-  constructor(
-    private readonly sopService: SopService,
-    private readonly fileManager: FileManagerService,
-  ) {}
+  constructor(private readonly sopService: SopService) {}
 
   @Get('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -176,18 +167,5 @@ export class SopController {
   })
   async publish(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser) {
     return await this.sopService.publishSop(id, user.id);
-  }
-
-  @Post('/upload')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
-  @HttpCode(HttpStatus.OK)
-  @UseInterceptors(FastifyFileInterceptor('file', {}))
-  async upload(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
-    if (!file) {
-      throw new BadRequestException('File is not present');
-    }
-
-    return await this.fileManager.uploadFile(file, true);
   }
 }

@@ -1,33 +1,53 @@
+import { IFileBody } from '@sopwise/modules/file-manager/types';
 import * as puppeteer from 'puppeteer';
-import { Readable } from 'stream';
 
 class PdfService {
   async generatePdfAsMulterFile(
     fileName: string,
     html: string,
-  ): Promise<Express.Multer.File> {
+  ): Promise<IFileBody> {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    const pdfUint8Array = await page.pdf({ format: 'A4' });
+    const htmlWithStyles = `
+      <style>
+        body {
+          padding: 20px;
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+        }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+      </style>
+      ${html}
+    `;
+
+    await page.setContent(htmlWithStyles, { waitUntil: 'networkidle0' });
+
+    const pdfUint8Array = await page.pdf({
+      format: 'A4',
+      margin: {
+        top: '10mm',
+        right: '10mm',
+        bottom: '10mm',
+        left: '10mm',
+      },
+      printBackground: true,
+      displayHeaderFooter: true,
+      headerTemplate: '<div></div>',
+      footerTemplate: '<div></div>',
+    });
     await browser.close();
     const pdfBuffer = Buffer.from(pdfUint8Array);
 
-    const multerFile: Express.Multer.File = {
-      fieldname: 'file',
-      originalname: `${fileName}-generated-${Date.now()}.pdf`,
-      encoding: '7bit',
-      mimetype: 'application/pdf',
-      size: pdfBuffer.length,
+    return {
+      originalName: `${fileName}-generated-${Date.now()}.pdf`,
       buffer: pdfBuffer,
-      stream: Readable.from(pdfBuffer),
-      destination: '',
-      filename: `${fileName}-generated-${Date.now()}.pdf`,
-      path: '',
+      mimeType: 'application/pdf',
     };
-
-    return multerFile;
   }
 }
 
