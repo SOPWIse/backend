@@ -43,10 +43,10 @@ import { RolesGuard } from '@sopwise/roles/roles.guard';
 export class FileManagerController {
   constructor(private fileSettingService: FileManagerService) {}
 
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Upload a file' })
   @ApiOkResponse({
-    description: '',
-    type: '',
+    description: 'The file has been successfully uploaded.',
+    type: FileDetailsResponseDTO,
   })
   @ApiConsumes('multipart/form-data')
   @HttpCode(HttpStatus.CREATED)
@@ -89,6 +89,10 @@ export class FileManagerController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a file by ID' })
+  @ApiOkResponse({
+    description: 'Returns the file with the given ID.',
+    type: FileDetailsResponseDTO,
+  })
   @ApiResponse({
     status: 200,
     description: 'Returns the file with the given ID.',
@@ -99,6 +103,10 @@ export class FileManagerController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a file by ID' })
+  @ApiOkResponse({
+    description: 'The file has been successfully updated.',
+    type: FileDetailsResponseDTO,
+  })
   @ApiResponse({
     status: 200,
     description: 'The file has been successfully updated.',

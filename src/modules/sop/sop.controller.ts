@@ -26,20 +26,6 @@ import { SopService } from '@sopwise/modules/sop/sop.service';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
 import { Roles } from '@sopwise/roles/roles.decorator';
 import { RolesGuard } from '@sopwise/roles/roles.guard';
-import multer from 'fastify-multer';
-
-const upload = multer({ dest: 'uploads/' });
-export const imageFileFilter = (
-  req: Request,
-  file: Express.Multer.File,
-  callback,
-) => {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    return callback(new Error('Only image files are allowed!'), false);
-  }
-  callback(null, true);
-};
-
 @ApiTags('SOPs')
 @ApiBearerAuth()
 @Controller('sop')
