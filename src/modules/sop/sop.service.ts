@@ -75,13 +75,25 @@ export class SopService {
     });
   }
   //  Don't add try catch block in this function
-  async uploadFile(id: string) {
+  async uploadFile(id: string, authorId: string) {
     const content = await this.findById(id);
     const file = await fileConverter.generatePdfAsMulterFile(
       content.title,
       content.content,
     );
-    const url = await this.fileManager.uploadFile(file, true);
+    const data = {
+      title: content.title,
+      visibility: 'public',
+      category: 'SOP',
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      file: file as any,
+    };
+    const { file: url } = await this.fileManager.uploadFileAws(
+      data,
+      authorId,
+      file,
+    );
     return url;
   }
 
@@ -89,7 +101,7 @@ export class SopService {
     try {
       return await this.prisma.$transaction(
         async (transaction) => {
-          const url = await this.uploadFile(id);
+          const url = await this.uploadFile(id, authorId);
           await this.approvalService.createApproval({
             allowedRole: ['ADMIN'],
             authorId: authorId,
