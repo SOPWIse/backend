@@ -53,7 +53,7 @@ model Sop {
   updatedAt   DateTime    @updatedAt @map("updated_at")
   contentUrl  String?     @map("content_url")
   author      SopWiseUser @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  Comment     Comment[]
+  comment     Comment[]
 }
 
 model FileSettings {

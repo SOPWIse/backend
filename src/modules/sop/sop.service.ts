@@ -118,7 +118,7 @@ export class SopService {
             },
           });
         },
-        { maxWait: 10000, timeout: 10000 },
+        { maxWait: 60000, timeout: 60000 },
       );
     } catch (e) {
       handlePrismaError(e);

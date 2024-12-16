@@ -49,11 +49,11 @@ export class CommentController {
     });
   }
 
-  @Get('/:id')
+  @Get('/:content_id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
-  async getCommentByContentId(@Param('id') id: string) {
+  async getCommentByContentId(@Param('content_id') id: string) {
     return this.comment.listCommentsByContentId(id);
   }
 

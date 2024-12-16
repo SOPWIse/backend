@@ -8,11 +8,12 @@ export class CommentService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createComment(body: CreateComment) {
+    console.log(JSON.stringify(body, null, 2));
     return this.prismaService.safeCreate<Comment, CreateComment>('comment', {
       authorId: body?.authorId,
       comment: body?.comment,
       status: body?.status,
-      contentId: body?.comment,
+      contentId: body?.contentId,
       createdAt: new Date(),
       updatedAt: new Date(),
       isDeleted: false,
@@ -44,7 +45,35 @@ export class CommentService {
 
   async listCommentsByContentId(contentId: string) {
     return this.prismaService.comment.findMany({
-      where: { contentId },
+      where: { contentId, parentId: null, isDeleted: false },
+      select: {
+        replies: {
+          select: {
+            comment: true,
+            createdAt: true,
+            updatedAt: true,
+            id: true,
+            author: {
+              select: {
+                email: true,
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        comment: true,
+        createdAt: true,
+        updatedAt: true,
+        id: true,
+        author: {
+          select: {
+            email: true,
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 
