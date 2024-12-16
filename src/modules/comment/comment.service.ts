@@ -7,6 +7,21 @@ import { CreateComment } from '@sopwise/types/comment.types';
 export class CommentService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  private author = {
+    select: {
+      email: true,
+      id: true,
+      name: true,
+    },
+  };
+  private comment = {
+    comment: true,
+    createdAt: true,
+    updatedAt: true,
+    id: true,
+    author: this.author,
+  };
+
   async createComment(body: CreateComment) {
     console.log(JSON.stringify(body, null, 2));
     return this.prismaService.safeCreate<Comment, CreateComment>('comment', {
@@ -47,31 +62,9 @@ export class CommentService {
     return this.prismaService.comment.findMany({
       where: { contentId, parentId: null, isDeleted: false },
       select: {
+        ...this.comment,
         replies: {
-          select: {
-            comment: true,
-            createdAt: true,
-            updatedAt: true,
-            id: true,
-            author: {
-              select: {
-                email: true,
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-        comment: true,
-        createdAt: true,
-        updatedAt: true,
-        id: true,
-        author: {
-          select: {
-            email: true,
-            id: true,
-            name: true,
-          },
+          select: { ...this.comment },
         },
       },
     });
