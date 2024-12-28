@@ -5,14 +5,8 @@ const SopStatusEnum = z.enum(['DRAFT', 'PUBLISHED', 'LISTED', 'REJECTED']);
 
 export const sopSchema = z.object({
   id: z.string().uuid().optional(),
-  title: z
-    .string()
-    .min(1, 'Title is required')
-    .max(255, 'Title must not exceed 255 characters'),
-  description: z
-    .string()
-    .min(1, 'Description is required')
-    .max(1000, 'Description must not exceed 1000 characters'),
+  title: z.string().optional(),
+  description: z.string().optional(),
   authorId: z.string().uuid('Invalid UUID for authorId'),
   status: SopStatusEnum.optional().default('DRAFT'),
   category: z
@@ -29,8 +23,8 @@ export const sopSchema = z.object({
     .min(0, 'Content is required')
     .max(1000000, 'Content is too long')
     .default(''),
-  createdAt: z.date().default(new Date()),
-  updatedAt: z.date().default(new Date()),
+  createdAt: z.any().optional(),
+  updatedAt: z.any().optional(),
   contentUrl: z
     .string()
     .url('Invalid URL')

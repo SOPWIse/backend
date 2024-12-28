@@ -49,7 +49,7 @@ export class SopService {
   async updateSop(id: string, body: Partial<CreateSop>) {
     return await this.prisma.sop.update({
       where: { id },
-      data: body,
+      data: sopSchema.parse(body),
     });
   }
 
