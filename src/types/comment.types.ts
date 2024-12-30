@@ -8,8 +8,10 @@ const commentSchema = z.object({
   contentId: z.string().uuid(),
   isDeleted: z.boolean().default(false),
   parentId: z.string().uuid().nullable(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  selecetdText: z.string().optional(),
+  htmlString: z.string().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export type CreateComment = z.infer<typeof commentSchema>;

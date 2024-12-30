@@ -20,6 +20,9 @@ export class CommentService {
     updatedAt: true,
     id: true,
     author: this.author,
+    status: true,
+    selectedText: true,
+    htmlString: true,
   };
 
   async createComment(body: CreateComment) {
@@ -29,8 +32,8 @@ export class CommentService {
       comment: body?.comment,
       status: body?.status,
       contentId: body?.contentId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       isDeleted: false,
       parentId: body?.parentId,
     });
@@ -59,7 +62,7 @@ export class CommentService {
   }
 
   async listCommentsByContentId(contentId: string) {
-    return this.prismaService.comment.findMany({
+    const data = this.prismaService.comment.findMany({
       where: { contentId, parentId: null, isDeleted: false },
       select: {
         ...this.comment,
@@ -68,6 +71,8 @@ export class CommentService {
         },
       },
     });
+
+    return data;
   }
 
   async listCommentById(id: string) {

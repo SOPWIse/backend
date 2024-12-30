@@ -3,7 +3,6 @@ import {
   IsBoolean,
   IsDate,
   IsEnum,
-  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
@@ -15,7 +14,6 @@ export class CreateCommentDto {
     example: 'This is a comment.',
   })
   @IsString()
-  @IsNotEmpty()
   comment!: string;
 
   @ApiPropertyOptional({
@@ -59,7 +57,7 @@ export class CreateCommentDto {
   })
   @IsDate()
   @IsOptional()
-  createdAt?: Date;
+  createdAt?: string;
 
   @ApiPropertyOptional({
     description:
@@ -68,5 +66,21 @@ export class CreateCommentDto {
   })
   @IsDate()
   @IsOptional()
-  updatedAt?: Date;
+  updatedAt?: string;
+
+  @ApiPropertyOptional({
+    description: 'The selected text that the comment refers to.',
+    example: 'This is the selected text.',
+  })
+  @IsString()
+  @IsOptional()
+  selectedText?: string;
+
+  @ApiPropertyOptional({
+    description: 'The selected HTML string of the comment.',
+    example: '<p>This is the comment.</p>',
+  })
+  @IsString()
+  @IsOptional()
+  htmlString?: string;
 }
