@@ -23,19 +23,22 @@ export class CommentService {
     status: true,
     selectedText: true,
     htmlString: true,
+    uniqueId: true,
   };
 
   async createComment(body: CreateComment) {
-    console.log(JSON.stringify(body, null, 2));
     return this.prismaService.safeCreate<Comment, CreateComment>('comment', {
       authorId: body?.authorId,
       comment: body?.comment,
       status: body?.status,
       contentId: body?.contentId,
+      htmlString: body?.htmlString,
+      selectedText: body?.selectedText,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isDeleted: false,
       parentId: body?.parentId,
+      uniqueId: body?.uniqueId,
     });
   }
 
@@ -69,6 +72,9 @@ export class CommentService {
         replies: {
           select: { ...this.comment },
         },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
 

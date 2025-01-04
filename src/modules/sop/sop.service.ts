@@ -8,8 +8,10 @@ import fileConverter from '@sopwise/common/file-converter/file-converter';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { ApprovalsService } from '@sopwise/modules/approvals/approvals.service';
+import { CommentService } from '@sopwise/modules/comment/comment.service';
 import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.service';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
+import { CreateComment } from '@sopwise/types/comment.types';
 import { CreateSop, sopSchema } from '@sopwise/types/sop.types';
 import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
 
@@ -20,6 +22,7 @@ export class SopService {
     private readonly paginationService: PaginationService,
     private readonly approvalService: ApprovalsService,
     private readonly fileManager: FileManagerService,
+    private readonly commentService: CommentService,
   ) {}
 
   private readonly select = {
@@ -60,8 +63,9 @@ export class SopService {
         select: { ...this.select, content: true },
       });
       const approval = await this.approvalService.findByContentId(id);
+      const comments = await this.commentService.listCommentsByContentId(id);
       if (approval) {
-        return { ...sop, approval };
+        return { ...sop, approval, comments };
       } else {
         return sop;
       }
@@ -181,5 +185,41 @@ export class SopService {
     } catch (e) {
       handlePrismaError(e);
     }
+  }
+
+  async patchContentCreateComment(
+    id: string,
+    content: string,
+    comment: CreateComment,
+  ) {
+    return this.prisma.$transaction(async (trx) => {
+      const com = await this.commentService.createComment(comment);
+      await trx.sop.update({
+        where: { id },
+        data: {
+          content,
+        },
+      });
+      return com;
+    });
+  }
+
+  async patchContentResolveComment(
+    id: string,
+    commentId: string,
+    content: string,
+  ) {
+    return this.prisma.$transaction(async (trx) => {
+      const com = await this.commentService.editComment(commentId, {
+        status: 'RESOLVED',
+      });
+      await trx.sop.update({
+        where: { id },
+        data: {
+          content,
+        },
+      });
+      return com;
+    });
   }
 }

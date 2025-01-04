@@ -73,6 +73,7 @@ model Comment {
   status       String
   authorId     String   @map("author_id")
   contentId    String   @map("sop_id")
+  uniqueId     String
   selectedText String?  @map("selected_text")
   htmlString   String?  @map("html_string")
   isDeleted    Boolean  @default(false) @map("is_deleted")

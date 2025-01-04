@@ -21,6 +21,7 @@ import {
 import { Role, SopWiseUser } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
+import { AddCommentDto } from '@sopwise/modules/sop/dto/add-comment.dto';
 import { CreateSopDto } from '@sopwise/modules/sop/dto/sop.dto';
 import { SopService } from '@sopwise/modules/sop/sop.service';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
@@ -167,5 +168,45 @@ export class SopController {
   })
   async publish(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser) {
     return await this.sopService.publishSop(id, user.id);
+  }
+
+  @Post('/:id/comment')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Add comments to SOP',
+    description: 'Needs content id, comment body to create comment',
+  })
+  async createComment(
+    @Param('id') id: string,
+    @GetCurrentUser() user: SopWiseUser,
+    @Body() body: AddCommentDto,
+  ) {
+    const { content, ...rest } = body;
+    rest.contentId = id;
+    rest.authorId = user.id;
+
+    return await this.sopService.patchContentCreateComment(id, content, rest);
+  }
+
+  @Patch('/:id/comment/:comment_id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Add comments to SOP',
+    description: 'Needs content id, comment body to create comment',
+  })
+  async resolveComment(
+    @Param('id') id: string,
+    @Param('comment_id') commentId: string,
+    @Body() body: { content: string },
+  ) {
+    return await this.sopService.patchContentResolveComment(
+      id,
+      commentId,
+      body.content,
+    );
   }
 }
