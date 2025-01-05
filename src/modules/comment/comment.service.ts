@@ -24,6 +24,7 @@ export class CommentService {
     selectedText: true,
     htmlString: true,
     uniqueId: true,
+    parentId: true,
   };
 
   async createComment(body: CreateComment) {
@@ -38,7 +39,7 @@ export class CommentService {
       updatedAt: new Date().toISOString(),
       isDeleted: false,
       parentId: body?.parentId,
-      uniqueId: body?.uniqueId,
+      uniqueId: body?.uniqueId ?? '',
     });
   }
 

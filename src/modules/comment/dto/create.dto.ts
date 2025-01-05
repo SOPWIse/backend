@@ -98,5 +98,6 @@ export class CreateCommentDto {
     example: 'comment-[some date]',
   })
   @IsString()
+  @IsOptional()
   uniqueId: string;
 }
