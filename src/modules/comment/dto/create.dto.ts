@@ -31,7 +31,8 @@ export class CreateCommentDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
-  contentId!: string;
+  @IsOptional()
+  contentId?: string;
 
   @ApiPropertyOptional({
     description: 'Flag to indicate if the comment is deleted.',
@@ -77,10 +78,26 @@ export class CreateCommentDto {
   selectedText?: string;
 
   @ApiPropertyOptional({
+    description: 'Author of the comment',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsString()
+  @IsOptional()
+  authorId?: string;
+
+  @ApiPropertyOptional({
     description: 'The selected HTML string of the comment.',
     example: '<p>This is the comment.</p>',
   })
   @IsString()
   @IsOptional()
   htmlString?: string;
+
+  @ApiPropertyOptional({
+    description: 'Unique Id to find and patch the content of SOP',
+    example: 'comment-[some date]',
+  })
+  @IsString()
+  @IsOptional()
+  uniqueId: string;
 }
