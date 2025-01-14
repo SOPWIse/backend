@@ -56,11 +56,28 @@ export class SopService {
     });
   }
 
+  async updateFlowData(id: string, body: string | object) {
+    return await this.prisma.sop.update({
+      where: { id },
+      data: {
+        flowData: body,
+      },
+    });
+  }
+
+  async getFlowDataById(id: string) {
+    const sop = await this.prisma.sop.findFirst({
+      where: { id },
+      select: { flowData: true },
+    });
+    return sop;
+  }
+
   async findById(id: string) {
     try {
       const sop = await this.prisma.sop.findFirst({
         where: { id },
-        select: { ...this.select, content: true },
+        select: { ...this.select, content: true, flowData: true },
       });
       const approval = await this.approvalService.findByContentId(id);
       const comments = await this.commentService.listCommentsByContentId(id);
