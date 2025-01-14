@@ -112,6 +112,39 @@ export class SopController {
     return await this.sopService.updateSop(id, { authorId: user.id, ...body });
   }
 
+  @Patch('/flow-data/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update SOP by ID',
+    description: 'Updates the flow data of a specific SOP by its ID.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'SOP updated successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 404, description: 'SOP not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async updateFlowData(@Param('id') id: string, @Body() body: string | object) {
+    return await this.sopService.updateFlowData(id, body);
+  }
+
+  @Get('/flow-data/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get flow data of SOP by ID',
+  })
+  @ApiResponse({
+    status: 200,
+  })
+  @ApiResponse({ status: 404, description: 'SOP not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getFlowData(@Param('id') id: string) {
+    return await this.sopService.getFlowDataById(id);
+  }
+
   @Post('/')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.AUTHOR)

@@ -47,6 +47,7 @@ model Sop {
   isDeleted   Boolean     @map("is_deleted")
   publishedAt DateTime?   @map("published_at")
   metaData    Json?       @map("meta_data")
+  flowData    Json?       @map("flow_data")
   authorId    String      @map("author_id")
   content     String?
   createdAt   DateTime    @default(now()) @map("created_at")
