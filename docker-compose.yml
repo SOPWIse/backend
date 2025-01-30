@@ -7,7 +7,7 @@ services:
       - "3000:3000"
       - "5555:5555"
     env_file:
-      - .env
+      - .env.production
     depends_on:
       - db
     command: >
@@ -21,7 +21,7 @@ services:
       POSTGRES_DB: mysopwise-db
       POSTGRES_HOST: db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
