@@ -47,16 +47,16 @@ export default class FastifyServerApplication {
     );
 
     const configService = this.app.get(ConfigService);
-    const PORT = configService.get('PORT');
+    const PORT = configService.get('PORT') || 3000;
     await this.configureServices(appModule);
-    // await this.app.listen({
-    //   port: parseInt(PORT || this.API_DEFAULT_PORT),
-    //   host: '0.0.0.0',
-    // });
+    await this.app.listen({
+      port: parseInt(PORT || this.API_DEFAULT_PORT),
+      host: '0.0.0.0',
+    });
     /**
      * Uncomment when testing locally
      * */
-    await this.app.listen(PORT);
+    // await this.app.listen(PORT);
     console.info(`⚛️ SOPWISE-API is running on: ${await this.app.getUrl()}`);
   }
 }

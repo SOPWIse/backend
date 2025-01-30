@@ -24,7 +24,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prisma-migrate-dev": "docker exec myApp npx prisma migrate dev",
+    "prisma-studio": "docker exec myApp npx prisma studio"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.703.0",

@@ -12,7 +12,7 @@ model SopWiseUser {
   email              String     @unique
   hash               String
   name               String?
-  role               Role       @default(ASSISTANT)
+  role               Role       @default(ADMIN)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   metaData           Json?
