@@ -78,6 +78,7 @@ COPY --from=builder /app/prisma ./prisma
 
 # Generate Prisma client in production
 RUN npx prisma generate
+RUN npx prisma migrate deploy
 # Install production dependencies only
 RUN pnpm install --prod
 
@@ -88,6 +89,5 @@ ENV ACCESS_KEY=""
 ENV SECRET_KEY=""
 ENV REGION=""
 
-EXPOSE 3000
 EXPOSE 80
 CMD ["pnpm", "start:prod"]

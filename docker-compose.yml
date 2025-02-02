@@ -4,7 +4,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "80:80"
       - "5555:5555"
     env_file:
       - .env.production
