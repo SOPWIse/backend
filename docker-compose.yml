@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     command: >
-      sh -c "npx prisma migrate deploy && pnpm start:prod"   
+      sh -c "pnpm start:prod"   
 
   db:
     image: postgres:15-alpine

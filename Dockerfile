@@ -78,7 +78,6 @@ COPY --from=builder /app/prisma ./prisma
 
 # Generate Prisma client in production
 RUN npx prisma generate
-RUN npx prisma migrate deploy
 # Install production dependencies only
 RUN pnpm install --prod
 
