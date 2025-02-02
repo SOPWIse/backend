@@ -6,4 +6,3 @@ async function bootstrap() {
   await server.run(AppModule);
 }
 bootstrap();
-// Empty

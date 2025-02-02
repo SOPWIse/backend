@@ -1,229 +1,209 @@
-// import { CheerioAPI, load, type Cheerio } from 'cheerio';
+import { CheerioAPI, load, type Cheerio } from 'cheerio';
 
-// // Types for different components
-// interface BaseComponent {
-//   type: string;
-//   id?: string;
-// }
+//
+interface BaseComponent {
+  type: string;
+  id?: string;
+}
 
-// interface TitleSection extends BaseComponent {
-//   type: 'title-section';
-//   title: string;
-//   subtitle?: string;
-// }
+interface TitleSection extends BaseComponent {
+  type: 'title-section';
+  title: string;
+  subtitle?: string;
+}
 
-// interface InputField extends BaseComponent {
-//   type: 'input-field';
-//   placeholder?: string;
-// }
+interface InputField extends BaseComponent {
+  type: 'input-field';
+  placeholder?: string;
+}
 
-// interface CheckboxField extends BaseComponent {
-//   type: 'checkbox';
-//   label: string;
-//   checked: boolean;
-// }
+interface CheckboxField extends BaseComponent {
+  type: 'checkbox';
+  label: string;
+  checked: boolean;
+}
 
-// interface RadioButton extends BaseComponent {
-//   type: 'radio-button';
-//   label: string;
-//   name: string;
-//   checked: boolean;
-// }
+interface RadioButton extends BaseComponent {
+  type: 'radio-button';
+  label: string;
+  name: string;
+  checked: boolean;
+}
 
-// interface TextArea extends BaseComponent {
-//   type: 'text-area';
-//   placeholder?: string;
-//   rows: number;
-//   cols: number;
-// }
+interface TextArea extends BaseComponent {
+  type: 'text-area';
+  placeholder?: string;
+  rows: number;
+  cols: number;
+}
 
-// interface HtmlContent extends BaseComponent {
-//   type: 'html';
-//   tag: string;
-//   content: string;
-//   attributes: Record<string, string>;
-// }
+interface HtmlContent extends BaseComponent {
+  type: 'html';
+  tag: string;
+  content: string;
+  attributes: Record<string, string>;
+}
 
-// // Section type that contains components
-// export interface ContentSection {
-//   title?: TitleSection;
-//   components: (
-//     | TitleSection
-//     | InputField
-//     | CheckboxField
-//     | RadioButton
-//     | TextArea
-//     | HtmlContent
-//   )[];
-// }
+export interface ContentSection {
+  title?: TitleSection;
+  components: (
+    | TitleSection
+    | InputField
+    | CheckboxField
+    | RadioButton
+    | TextArea
+    | HtmlContent
+  )[];
+}
 
-// // Registry for component parsers
-// type ComponentParser = ($element: Cheerio<any>, $: CheerioAPI) => BaseComponent;
+type ComponentParser = ($element: Cheerio<any>, $: CheerioAPI) => BaseComponent;
 
-// class ContentParser {
-//   private componentParsers: Map<string, ComponentParser>;
+class ContentParser {
+  private componentParsers: Map<string, ComponentParser>;
 
-//   constructor() {
-//     this.componentParsers = new Map();
-//     this.registerDefaultParsers();
-//   }
+  constructor() {
+    this.componentParsers = new Map();
+    this.registerDefaultParsers();
+  }
 
-//   // Register default component parsers
-//   private registerDefaultParsers() {
-//     this.registerParser('title-section', this.parseTitleSection);
-//     this.registerParser('input-field', this.parseInputField);
-//     this.registerParser('checkbox', this.parseCheckbox);
-//     this.registerParser('radio-button', this.parseRadioButton);
-//     this.registerParser('text-area', this.parseTextArea);
-//   }
+  private registerDefaultParsers() {
+    this.registerParser('title-section', this.parseTitleSection);
+    this.registerParser('input-field', this.parseInputField);
+    this.registerParser('checkbox', this.parseCheckbox);
+    this.registerParser('radio-button', this.parseRadioButton);
+    this.registerParser('text-area', this.parseTextArea);
+  }
 
-//   // Method to register new component parsers
-//   public registerParser(dataId: string, parser: ComponentParser) {
-//     this.componentParsers.set(dataId, parser);
-//   }
+  public registerParser(dataId: string, parser: ComponentParser) {
+    this.componentParsers.set(dataId, parser);
+  }
 
-//   // Parse title section
-//   private parseTitleSection = (
-//     $element: Cheerio<any>,
-//     $: CheerioAPI,
-//   ): TitleSection => {
-//     const $title = $element.find('h1');
-//     const $subtitle = $element.find('p');
+  private parseTitleSection = (
+    $element: Cheerio<any>,
+    $: CheerioAPI,
+  ): TitleSection => {
+    const $title = $element.find('h1');
+    const $subtitle = $element.find('p');
 
-//     return {
-//       type: 'title-section',
-//       id: $element.attr('data-id'),
-//       title: $title.text().trim(),
-//       subtitle: $subtitle.text().trim(),
-//     };
-//   };
+    return {
+      type: 'title-section',
+      id: $element.attr('data-id'),
+      title: $title.text().trim(),
+      subtitle: $subtitle.text().trim(),
+    };
+  };
 
-//   // Parse input field
-//   private parseInputField = (
-//     $element: Cheerio<any>,
-//     $: CheerioAPI,
-//   ): InputField => {
-//     return {
-//       type: 'input-field',
-//       id: $element.attr('data-id'),
-//       placeholder: $element.attr('placeholder'),
-//     };
-//   };
+  private parseInputField = (
+    $element: Cheerio<any>,
+    $: CheerioAPI,
+  ): InputField => {
+    return {
+      type: 'input-field',
+      id: $element.attr('data-id'),
+      placeholder: $element.attr('placeholder'),
+    };
+  };
 
-//   // Parse checkbox
-//   private parseCheckbox = (
-//     $element: Cheerio<any>,
-//     $: CheerioAPI,
-//   ): CheckboxField => {
-//     const $input = $element.find('input[type="checkbox"]');
-//     return {
-//       type: 'checkbox',
-//       id: $element.attr('data-id'),
-//       label: $element.text().trim(),
-//       checked: $input.prop('checked') === 'true',
-//     };
-//   };
+  private parseCheckbox = (
+    $element: Cheerio<any>,
+    $: CheerioAPI,
+  ): CheckboxField => {
+    const $input = $element.find('input[type="checkbox"]');
+    return {
+      type: 'checkbox',
+      id: $element.attr('data-id'),
+      label: $element.text().trim(),
+      checked: $input.prop('checked') === 'true',
+    };
+  };
 
-//   // Parse radio button
-//   private parseRadioButton = (
-//     $element: Cheerio<any>,
-//     $: CheerioAPI,
-//   ): RadioButton => {
-//     const $input = $element.find('input[type="radio"]');
-//     return {
-//       type: 'radio-button',
-//       id: $element.attr('data-id'),
-//       label: $element.text().trim(),
-//       name: $input.attr('name') || '',
-//       checked: $input.prop('checked') === 'true',
-//     };
-//   };
+  private parseRadioButton = (
+    $element: Cheerio<any>,
+    $: CheerioAPI,
+  ): RadioButton => {
+    const $input = $element.find('input[type="radio"]');
+    return {
+      type: 'radio-button',
+      id: $element.attr('data-id'),
+      label: $element.text().trim(),
+      name: $input.attr('name') || '',
+      checked: $input.prop('checked') === 'true',
+    };
+  };
 
-//   // Parse text area
-//   private parseTextArea = ($element: Cheerio<any>, $: CheerioAPI): TextArea => {
-//     return {
-//       type: 'text-area',
-//       id: $element.attr('data-id'),
-//       placeholder: $element.attr('placeholder'),
-//       rows: parseInt($element.attr('rows') || '4'),
-//       cols: parseInt($element.attr('cols') || '50'),
-//     };
-//   };
+  private parseTextArea = ($element: Cheerio<any>, $: CheerioAPI): TextArea => {
+    return {
+      type: 'text-area',
+      id: $element.attr('data-id'),
+      placeholder: $element.attr('placeholder'),
+      rows: parseInt($element.attr('rows') || '4'),
+      cols: parseInt($element.attr('cols') || '50'),
+    };
+  };
 
-//   // Parse regular HTML content
-//   private parseHtmlContent = (
-//     $element: Cheerio<any>,
-//     $: CheerioAPI,
-//   ): HtmlContent => {
-//     const attributes: Record<string, string> = {};
-//     const el = $element.get(0);
+  private parseHtmlContent = (
+    $element: Cheerio<any>,
+    $: CheerioAPI,
+  ): HtmlContent => {
+    const attributes: Record<string, string> = {};
+    const el = $element.get(0);
 
-//     // Get all attributes
-//     if (el) {
-//       const attribs = (el as any).attribs || {};
-//       Object.keys(attribs).forEach((attr: string) => {
-//         attributes[attr] = attribs[attr] || '';
-//       });
-//     }
+    if (el) {
+      const attribs = (el as any).attribs || {};
+      Object.keys(attribs).forEach((attr: string) => {
+        attributes[attr] = attribs[attr] || '';
+      });
+    }
 
-//     return {
-//       type: 'html',
-//       tag: el ? (el as any).name || 'div' : 'div', // Changed from tagName to name
-//       content: $element.html() || '',
-//       attributes,
-//     };
-//   };
+    return {
+      type: 'html',
+      tag: el ? (el as any).name || 'div' : 'div',
+      content: $element.html() || '',
+      attributes,
+    };
+  };
 
-//   // Main parsing method
-//   public parse(htmlContent: string): ContentSection[] {
-//     const $ = load(htmlContent);
-//     const sections: ContentSection[] = [];
-//     let currentSection: ContentSection = { components: [] };
+  public parse(htmlContent: string): ContentSection[] {
+    const $ = load(htmlContent);
+    const sections: ContentSection[] = [];
+    let currentSection: ContentSection = { components: [] };
 
-//     // Process each element at root level
-//     $('body > *').each((_, element) => {
-//       const $element = $(element);
-//       const dataId = $element.attr('data-id');
+    $('body > *').each((_, element) => {
+      const $element = $(element);
+      const dataId = $element.attr('data-id');
 
-//       // Check if element is a title section
-//       if (dataId === 'title-section') {
-//         // If we have an existing section with components, save it
-//         if (currentSection.components.length > 0) {
-//           sections.push(currentSection);
-//         }
-//         // Start a new section
-//         currentSection = {
-//           title: this.parseTitleSection($element, $),
-//           components: [],
-//         };
-//       } else {
-//         // Parse other components
-//         let component: BaseComponent;
+      if (dataId === 'title-section') {
+        if (currentSection.components.length > 0) {
+          sections.push(currentSection);
+        }
 
-//         if (dataId && this.componentParsers.has(dataId)) {
-//           // Use registered parser for known components
-//           const parser = this.componentParsers.get(dataId)!;
-//           component = parser($element, $);
-//         } else {
-//           // Parse as regular HTML content
-//           component = this.parseHtmlContent($element, $);
-//         }
+        currentSection = {
+          title: this.parseTitleSection($element, $),
+          components: [],
+        };
+      } else {
+        let component: BaseComponent;
 
-//         currentSection.components.push(component as any);
-//       }
-//     });
+        if (dataId && this.componentParsers.has(dataId)) {
+          const parser = this.componentParsers.get(dataId)!;
+          component = parser($element, $);
+        } else {
+          component = this.parseHtmlContent($element, $);
+        }
 
-//     // Add the last section if it has components
-//     if (currentSection.components.length > 0) {
-//       sections.push(currentSection);
-//     }
+        currentSection.components.push(component as any);
+      }
+    });
 
-//     return sections;
-//   }
-// }
+    if (currentSection.components.length > 0) {
+      sections.push(currentSection);
+    }
 
-// Usage example
-// export const createParser = () => new ContentParser();
+    return sections;
+  }
+}
+
+export const createParser = () => new ContentParser();
 
 // import * as cheerio from 'cheerio';
 

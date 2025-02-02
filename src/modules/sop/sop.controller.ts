@@ -27,6 +27,7 @@ import { SopService } from '@sopwise/modules/sop/sop.service';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
 import { Roles } from '@sopwise/roles/roles.decorator';
 import { RolesGuard } from '@sopwise/roles/roles.guard';
+import { createParser } from '@sopwise/utils/content-parser';
 import multer from 'fastify-multer';
 
 const upload = multer({ dest: 'uploads/' });
@@ -241,5 +242,10 @@ export class SopController {
       commentId,
       body.content,
     );
+  }
+
+  @Post('/parser')
+  async parser(@Body() body: string) {
+    return createParser().parse(body);
   }
 }
