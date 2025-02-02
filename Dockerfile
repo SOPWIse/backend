@@ -91,6 +91,8 @@ ENV REGION=""
 EXPOSE 80
 # CMD ["pnpm", "start:prod"]
 
-RUN chmod +x /api-server/startProduction.sh
-RUN chown root:root startProduction.sh
-CMD /api-server/startProduction.sh
+
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
+
+CMD ["./start.sh"]
