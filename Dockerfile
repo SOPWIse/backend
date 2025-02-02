@@ -89,4 +89,5 @@ ENV SECRET_KEY=""
 ENV REGION=""
 
 EXPOSE 3000
+EXPOSE 80
 CMD ["pnpm", "start:prod"]

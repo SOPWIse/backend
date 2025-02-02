@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "SopWiseUser" ALTER COLUMN "role" SET DEFAULT 'ADMIN';
