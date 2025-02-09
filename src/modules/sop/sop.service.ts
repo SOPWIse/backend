@@ -13,6 +13,7 @@ import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.s
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { CreateComment } from '@sopwise/types/comment.types';
 import { CreateSop, sopSchema } from '@sopwise/types/sop.types';
+import { createParser } from '@sopwise/utils/content-parser';
 import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
 
 @Injectable()
@@ -70,7 +71,7 @@ export class SopService {
       where: { id },
       select: { flowData: true },
     });
-    return sop;
+    return JSON.parse(sop.flowData as string) ?? [];
   }
 
   async findById(id: string) {
@@ -149,7 +150,8 @@ export class SopService {
   async getAuthorOfContent(id: string) {
     return (await this.findById(id)).author;
   }
-
+  // When the SOP gets approved, this will update all the flags related to approval/Listings
+  // this will also generate the flow data
   async approveOnId(id: string, userId: string) {
     const approval = await this.approvalService.findByContentId(id);
     const author = await this.getAuthorOfContent(id);
@@ -165,9 +167,13 @@ export class SopService {
           status: 'APPROVED',
           approvedBy: userId,
         });
-        return trx.sop.update({
+        const content = await trx.sop.findFirst({
+          where: { id },
+        });
+        return await trx.sop.update({
           where: { id },
           data: {
+            flowData: JSON.stringify(createParser.parse(content.content)),
             status: 'LISTED',
             isListed: true,
           },
@@ -211,6 +217,15 @@ export class SopService {
     comment: CreateComment,
   ) {
     return this.prisma.$transaction(async (trx) => {
+      const approval = await trx.approval.findFirst({
+        where: { contentId: id },
+      });
+
+      if (!approval) {
+        throw new NotFoundException(
+          'Ask the author to publish this SOP for review, then you will be able to add comment',
+        );
+      }
       const com = await this.commentService.createComment(comment);
       await trx.sop.update({
         where: { id },

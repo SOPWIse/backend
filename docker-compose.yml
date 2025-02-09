@@ -4,14 +4,14 @@ services:
   app:
     build: .
     ports:
-      - "80:80"
-      - "5555:5555"
+      - '80:80'
+      - '5555:5555'
     env_file:
       - .env.production
     depends_on:
       - db
     command: >
-      sh -c "pnpm start:prod"   
+      sh -c "pnpm start:prod"
 
   db:
     image: postgres:15-alpine
@@ -21,7 +21,7 @@ services:
       POSTGRES_DB: mysopwise-db
       POSTGRES_HOST: db
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
