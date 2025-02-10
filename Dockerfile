@@ -1,8 +1,8 @@
 # Build stage
-FROM node:21 AS builder
+FROM node:20 AS builder
 
 # Install pnpm globally
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@8.15.7 --activate
 RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /app
@@ -16,7 +16,7 @@ RUN pnpm run build
 FROM node:20-bullseye
 
 # Install pnpm in production image
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@8.15.7 --activate
 
 # Install system dependencies for Puppeteer and Chromium
 RUN apt-get update && apt-get install -y --no-install-recommends \
