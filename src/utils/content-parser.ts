@@ -12,6 +12,7 @@ import {
 import { CheerioAPI, load, type Cheerio } from 'cheerio';
 import { v4 as uuidv4 } from 'uuid';
 
+let counter = 0;
 type ComponentParser = (
   $element: Cheerio<never>,
   $: CheerioAPI,
@@ -38,6 +39,7 @@ export class ContentParser {
   }
 
   private parseTitleSection = ($element: Cheerio<never>): TitleSection => {
+    counter = 0;
     const $title = $element.find('h1');
     const $subtitle = $element.find('p');
     return {
@@ -45,6 +47,17 @@ export class ContentParser {
       pk: uuidv4(),
       title: $title.text(),
       subtitle: $subtitle.text(),
+      children: [],
+    };
+  };
+
+  private parseProcedure = (): TitleSection => {
+    counter++;
+    return {
+      type: 'title-section',
+      pk: uuidv4(),
+      title: `Step ${counter}`,
+      subtitle: '',
       children: [],
     };
   };
@@ -105,8 +118,6 @@ export class ContentParser {
         }
       });
     }
-
-    console.log(rawHtml);
 
     return {
       type: 'html',
@@ -213,22 +224,55 @@ export class ContentParser {
       .each((_, element) => {
         const $element = $(element);
 
+        // Handle comment elements
         const commentElement = $element.find('span[id="comment"]');
-
         let commentContent = '';
         if (commentElement.length) {
           commentContent = commentElement.text() || '';
-          console.log('e>>', commentElement);
-          console.log(commentContent);
           commentElement.replaceWith(commentContent);
         }
 
+        // Skip empty paragraphs
         if ($element.is('p') && $element.html() === '&nbsp;') {
           return;
         }
 
+        // Handle UL elements and their LI children
+        if ($element.is('ul')) {
+          $element.find('li').each((_, li) => {
+            const $li = $(li);
+
+            if ($li.attr('data-id') === 'procedure-li') {
+              // Finalize current section only if it has a title
+              if (
+                currentSection.title ||
+                currentSection.components.length > 0
+              ) {
+                sections.push(currentSection);
+              }
+              const newSection = {
+                title: this.parseProcedure(),
+                components: [] as BaseComponent[],
+              };
+              const component = this.parseElementRecursive($li, $);
+              if (component) {
+                newSection.components.push(component);
+              }
+              sections.push(newSection);
+              currentSection = { components: [] }; // Reset with empty section
+            } else {
+              const component = this.parseElementRecursive($li, $);
+              if (component) {
+                currentSection.components.push(component);
+              }
+            }
+          });
+          return; // Skip processing the UL itself
+        }
+
+        // Handle title sections
         if ($element.attr('data-id') === 'title-section') {
-          if (currentSection.components.length > 0) {
+          if (currentSection.title || currentSection.components.length > 0) {
             sections.push(currentSection);
           }
           currentSection = {
@@ -243,7 +287,8 @@ export class ContentParser {
         }
       });
 
-    if (currentSection.components.length > 0) {
+    // Add final section if it has components or title
+    if (currentSection.title || currentSection.components.length > 0) {
       sections.push(currentSection);
     }
 
