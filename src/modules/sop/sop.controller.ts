@@ -12,12 +12,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Role, SopWiseUser } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
@@ -30,11 +25,7 @@ import { RolesGuard } from '@sopwise/roles/roles.guard';
 import multer from 'fastify-multer';
 
 const upload = multer({ dest: 'uploads/' });
-export const imageFileFilter = (
-  req: Request,
-  file: Express.Multer.File,
-  callback,
-) => {
+export const imageFileFilter = (req: Request, file: Express.Multer.File, callback) => {
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
     return callback(new Error('Only image files are allowed!'), false);
   }
@@ -53,8 +44,7 @@ export class SopController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all SOPs',
-    description:
-      'Retrieves a paginated list of all SOPs. Only accessible to ADMIN and AUTHOR roles.',
+    description: 'Retrieves a paginated list of all SOPs. Only accessible to ADMIN and AUTHOR roles.',
   })
   @ApiResponse({
     status: 200,
@@ -75,8 +65,7 @@ export class SopController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get SOP by ID',
-    description:
-      'Retrieves a specific SOP by its ID. Only accessible to ADMIN and AUTHOR roles.',
+    description: 'Retrieves a specific SOP by its ID. Only accessible to ADMIN and AUTHOR roles.',
   })
   @ApiResponse({
     status: 200,
@@ -94,8 +83,7 @@ export class SopController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update SOP by ID',
-    description:
-      'Updates the details of a specific SOP by its ID. Only accessible to ADMIN and AUTHOR roles.',
+    description: 'Updates the details of a specific SOP by its ID. Only accessible to ADMIN and AUTHOR roles.',
   })
   @ApiResponse({
     status: 200,
@@ -104,16 +92,14 @@ export class SopController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 404, description: 'SOP not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async updateSop(
-    @GetCurrentUser() user: SopWiseUser,
-    @Param('id') id: string,
-    @Body() body: Partial<CreateSopDto>,
-  ) {
+  async updateSop(@GetCurrentUser() user: SopWiseUser, @Param('id') id: string, @Body() body: Partial<CreateSopDto>) {
     return await this.sopService.updateSop(id, { authorId: user.id, ...body });
   }
 
   @Patch('/flow-data/:id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
   @ApiOperation({
     summary: 'Update SOP by ID',
     description: 'Updates the flow data of a specific SOP by its ID.',
@@ -151,8 +137,7 @@ export class SopController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new SOP',
-    description:
-      'Creates a new SOP with the provided data. Only accessible to ADMIN and AUTHOR roles.',
+    description: 'Creates a new SOP with the provided data. Only accessible to ADMIN and AUTHOR roles.',
   })
   @ApiResponse({
     status: 201,
@@ -160,10 +145,7 @@ export class SopController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async createSop(
-    @GetCurrentUser() user: SopWiseUser,
-    @Body() body: CreateSopDto,
-  ) {
+  async createSop(@GetCurrentUser() user: SopWiseUser, @Body() body: CreateSopDto) {
     return await this.sopService.createSop({ authorId: user.id, ...body });
   }
 
@@ -211,11 +193,7 @@ export class SopController {
     summary: 'Add comments to SOP',
     description: 'Needs content id, comment body to create comment',
   })
-  async createComment(
-    @Param('id') id: string,
-    @GetCurrentUser() user: SopWiseUser,
-    @Body() body: AddCommentDto,
-  ) {
+  async createComment(@Param('id') id: string, @GetCurrentUser() user: SopWiseUser, @Body() body: AddCommentDto) {
     const { content, ...rest } = body;
     rest.contentId = id;
     rest.authorId = user.id;
@@ -236,10 +214,6 @@ export class SopController {
     @Param('comment_id') commentId: string,
     @Body() body: { content: string },
   ) {
-    return await this.sopService.patchContentResolveComment(
-      id,
-      commentId,
-      body.content,
-    );
+    return await this.sopService.patchContentResolveComment(id, commentId, body.content);
   }
 }

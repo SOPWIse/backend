@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ExperimentLog, Step } from '@prisma/client';
+import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
+import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { ExperimentLogSchema, StepSchema, UpdateLogSchema } from '@sopwise/types/experiment-logs.types';
 
 @Injectable()
 export class ExperimentLogsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService, private readonly pagination: PaginationService) {}
 
   selector = {
     id: true,
@@ -44,6 +46,30 @@ export class ExperimentLogsService {
 
   async createStepOnLogId(step: StepSchema) {
     return this.prismaService.safeCreate<Step, StepSchema>('step', step);
+  }
+
+  async getAllLogs(query: PaginationQueryDto) {
+    const logs = await this.pagination.paginate<ExperimentLog>('ExperimentLog', query, { ...this.selector });
+
+    if (!logs?.data?.data) return logs;
+
+    const sopData = await Promise.all(
+      logs.data.data.map(async (ele) => {
+        const sop = await this.prismaService.sop.findFirst({
+          where: { id: ele?.sopId },
+          select: { title: true, description: true, id: true },
+        });
+        const user = await this.prismaService.sopWiseUser.findFirst({
+          where: { id: ele?.userId },
+          select: { name: true, email: true, id: true },
+        });
+        return { ...ele, sop, user };
+      }),
+    );
+
+    logs.data.data = sopData;
+
+    return logs;
   }
 
   async updateLogs(logId: string, body: UpdateLogSchema) {

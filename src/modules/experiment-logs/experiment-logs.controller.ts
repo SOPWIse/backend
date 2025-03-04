@@ -1,7 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
+import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
 import { ExperimentLogDto, StepDto } from './dto/experiment-logs.dto';
 import { ExperimentLogsService } from './experiment-logs.service';
+
+import { Role } from '@prisma/client';
+import { Roles } from '@sopwise/roles/roles.decorator';
+import { RolesGuard } from '@sopwise/roles/roles.guard';
 
 @ApiTags('Experiment Logs')
 @Controller('experiment-logs')
@@ -9,6 +28,13 @@ export class ExperimentLogsController {
   constructor(private readonly experimentLogsService: ExperimentLogsService) {}
 
   @Post('/')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   @ApiOperation({ summary: 'Create a new experiment log' })
   @ApiResponse({
     status: 201,
@@ -18,7 +44,26 @@ export class ExperimentLogsController {
     return await this.experimentLogsService.createLog(body);
   }
 
+  @Get('/all')
+  @ApiOperation({ summary: 'Create a new experiment log' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: 201,
+    description: 'The experiment log has been successfully created.',
+  })
+  async getLogs(
+    @Query(new ValidationPipe({ transform: true }))
+    query: PaginationQueryDto,
+  ) {
+    return await this.experimentLogsService.getAllLogs(query);
+  }
+
   @Post('step')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new step for an experiment log' })
   @ApiResponse({
     status: 201,
@@ -29,6 +74,9 @@ export class ExperimentLogsController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update an experiment log' })
   @ApiResponse({
     status: 200,
@@ -39,6 +87,9 @@ export class ExperimentLogsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete an experiment log' })
   @ApiResponse({
     status: 200,
@@ -49,6 +100,9 @@ export class ExperimentLogsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get an experiment log by its ID' })
   @ApiResponse({
     status: 200,
@@ -59,6 +113,9 @@ export class ExperimentLogsController {
   }
 
   @Get('sop/:sopId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get experiment logs by SOP ID' })
   @ApiResponse({
     status: 200,
@@ -69,6 +126,9 @@ export class ExperimentLogsController {
   }
 
   @Get('user/:userId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get experiment logs by User ID' })
   @ApiResponse({
     status: 200,
@@ -79,6 +139,9 @@ export class ExperimentLogsController {
   }
 
   @Get('/:logId/steps')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get steps for a specific experiment log' })
   @ApiResponse({
     status: 200,
@@ -89,6 +152,9 @@ export class ExperimentLogsController {
   }
 
   @Get('step/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a specific step by its ID' })
   @ApiResponse({
     status: 200,
