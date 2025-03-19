@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
@@ -73,11 +74,13 @@ export class ExperimentLogDto {
   @ApiProperty({ description: 'Creation date of the experiment log', type: String, format: 'date-time' })
   @IsDate()
   @Type(() => Date)
+  @Optional()
   createdAt: Date;
 
   @ApiProperty({ description: 'Last update date of the experiment log', type: String, format: 'date-time' })
   @IsDate()
   @Type(() => Date)
+  @Optional()
   updatedAt: Date;
 
   @ApiProperty({ description: 'Tenant identifier', default: 'sopwise' })

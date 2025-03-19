@@ -48,6 +48,7 @@ export class ExperimentLogsService {
     return this.prismaService.safeCreate<Step, StepSchema>('step', step);
   }
 
+  // TODO : HOW WILL THE WE SEARCH BY SOP NAME/ USER NAME IF ITS NOT PART OF EXPERIMENT LOG
   async getAllLogs(query: PaginationQueryDto) {
     const logs = await this.pagination.paginate<ExperimentLog>('ExperimentLog', query, { ...this.selector });
 
