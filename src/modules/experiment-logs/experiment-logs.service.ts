@@ -79,23 +79,34 @@ export class ExperimentLogsService {
   }
 
   async updateLogs(logId: string, body: UpdateLogSchema) {
-    const { steps, ...data } = body;
-    const stepsToUpdate = steps.filter((step) => step.id);
-    const stepsToCreate = steps.filter((step) => !step.id);
-
+    const { steps, id, ...data } = body;
+    const stepsToUpdate = steps
+      .filter((step) => step.id)
+      .map((step) => {
+        // Remove logId from the update payload if present
+        const { logId, ...updateData } = step;
+        return {
+          where: { id: step.id },
+          data: { ...updateData, updatedAt: new Date() },
+        };
+      });
+    const stepsToCreate = steps
+      .filter((step) => !step.id)
+      .map((step) => {
+        // Remove logId from the create payload if present
+        const { logId, ...createData } = step;
+        return {
+          ...createData,
+          createdAt: new Date(),
+        };
+      });
     return this.prismaService.experimentLog.update({
       where: { id: logId },
       data: {
         ...data,
         steps: {
-          update: stepsToUpdate.map((step) => ({
-            where: { id: step.id },
-            data: { ...step, updatedAt: new Date() },
-          })),
-          create: stepsToCreate.map((step) => ({
-            ...step,
-            createdAt: new Date(),
-          })),
+          update: stepsToUpdate,
+          create: stepsToCreate,
         },
         updatedAt: new Date(),
       },
@@ -108,7 +119,7 @@ export class ExperimentLogsService {
   }
 
   async getLogById(id: string) {
-    return this.prismaService.experimentLog.findUnique({ where: { id }, select: this.selector });
+    return this.prismaService.experimentLog.findFirst({ where: { id }, select: this.selector });
   }
 
   async getLogsBySopId(sopId: string) {
