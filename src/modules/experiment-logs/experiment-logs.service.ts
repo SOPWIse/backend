@@ -40,6 +40,11 @@ export class ExperimentLogsService {
     // if (isExisting) {
     //   return isExisting;
     // }
+    // CHECK THIS
+    if (body.id) {
+      const obj = await this.updateLogs(body.id, body);
+      return obj;
+    }
 
     return this.prismaService.safeCreate<ExperimentLog, ExperimentLogSchema>('experimentLog', body);
   }
