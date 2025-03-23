@@ -34,12 +34,14 @@ export class StepDto {
   @ApiProperty({ description: 'Creation date of the step', type: String, format: 'date-time' })
   @IsDate()
   @Type(() => Date)
-  createdAt: Date;
+  @IsOptional()
+  createdAt: Date = new Date();
 
   @ApiProperty({ description: 'Last update date of the step', type: String, format: 'date-time' })
   @IsDate()
   @Type(() => Date)
-  updatedAt: Date;
+  @IsOptional()
+  updatedAt: Date = new Date();
 
   @ApiPropertyOptional({ description: 'Form data as JSON object' })
   @IsOptional()
@@ -75,13 +77,13 @@ export class ExperimentLogDto {
   @IsDate()
   @Type(() => Date)
   @Optional()
-  createdAt: Date;
+  createdAt: Date = new Date();
 
   @ApiProperty({ description: 'Last update date of the experiment log', type: String, format: 'date-time' })
   @IsDate()
   @Type(() => Date)
   @Optional()
-  updatedAt: Date;
+  updatedAt: Date = new Date();
 
   @ApiProperty({ description: 'Tenant identifier', default: 'sopwise' })
   @IsString()

@@ -36,10 +36,10 @@ export class ExperimentLogsService {
   }
 
   async createLog(body: ExperimentLogSchema) {
-    const isExisting = await this.getLogsByUserAndSop(body.userId, body.sopId);
-    if (isExisting) {
-      return isExisting;
-    }
+    // const isExisting = await this.getLogsByUserAndSop(body.userId, body.sopId);
+    // if (isExisting) {
+    //   return isExisting;
+    // }
 
     return this.prismaService.safeCreate<ExperimentLog, ExperimentLogSchema>('experimentLog', body);
   }
