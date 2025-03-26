@@ -90,6 +90,40 @@ model Comment {
   @@map("comments")
 }
 
+model ExperimentLog {
+  id                   String        @id @default(uuid())
+  sopId                String        @map("sop_id")
+  userId               String        @map("user_id")
+  status               String        @default("PENDING")
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+  tenant               String        @default("sopwise")
+  total_time           Float?
+  meta_data            Json?         @map("meta_data")
+  completion_percentage Float?
+  steps                Step[]
+
+  @@map("experiment_logs")
+}
+
+model Step {
+  id         String      @id @default(uuid())
+  logId      String      @map("log_id")
+  time_taken Float?
+  title      String?
+  subtitle   String?  
+  tenant     String      @default("sopwise")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+  form_data  Json?       @map("form_data")
+  meta_data  Json?       @map("meta_data")
+  log        ExperimentLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+
+  @@map("steps")
+}
+
+
+
 enum Role {
   ADMIN
   AUTHOR
