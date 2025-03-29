@@ -4,7 +4,6 @@ import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { ExperimentLogSchema, StepSchema, UpdateLogSchema } from '@sopwise/types/experiment-logs.types';
-
 @Injectable()
 export class ExperimentLogsService {
   constructor(private readonly prismaService: PrismaService, private readonly pagination: PaginationService) {}
@@ -113,6 +112,8 @@ export class ExperimentLogsService {
       select: this.selector,
     });
   }
+
+  async getPDFReport(id: string) {}
 
   async deleteLog(id: string) {
     return this.prismaService.experimentLog.delete({ where: { id } });

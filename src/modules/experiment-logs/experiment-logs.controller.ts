@@ -163,4 +163,9 @@ export class ExperimentLogsController {
   async getStepById(@Param('id') id: string) {
     return await this.experimentLogsService.getStepById(id);
   }
+
+  @Get('generate-pdf/:id')
+  async getPDFReport(@Param('id') id: string) {
+    return await this.experimentLogsService.getPDFReport(id);
+  }
 }
