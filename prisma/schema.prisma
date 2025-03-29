@@ -101,6 +101,7 @@ model ExperimentLog {
   total_time           Float?
   meta_data            Json?         @map("meta_data")
   completion_percentage Float?
+  url                  String?       
   steps                Step[]
 
   @@map("experiment_logs")
