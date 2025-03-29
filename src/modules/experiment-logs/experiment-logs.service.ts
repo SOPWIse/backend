@@ -99,10 +99,12 @@ export class ExperimentLogsService {
           createdAt: new Date(),
         };
       });
+    const total_time = steps?.reduce((pe, ce) => pe + ce?.time_taken, 0);
     return this.prismaService.experimentLog.update({
       where: { id: logId },
       data: {
         ...data,
+        total_time: total_time,
         steps: {
           update: stepsToUpdate,
           create: stepsToCreate,

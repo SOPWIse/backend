@@ -111,4 +111,9 @@ export class ExperimentLogDto {
   @Type(() => StepDto)
   @IsOptional()
   steps: StepDto[];
+
+  @ApiProperty({ description: 'URL of the experiment log' })
+  @IsString()
+  @IsOptional()
+  url: string;
 }

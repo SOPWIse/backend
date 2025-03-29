@@ -25,6 +25,7 @@ export const experimentLogSchema = z.object({
   meta_data: z.record(z.any()).optional(),
   completion_percentage: z.number().optional(),
   steps: z.array(stepSchema),
+  url: z.string().optional(),
 });
 export type StepSchema = z.infer<typeof stepSchema>;
 export type ExperimentLogSchema = z.infer<typeof experimentLogSchema>;
