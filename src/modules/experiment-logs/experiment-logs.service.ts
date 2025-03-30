@@ -2,11 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { ExperimentLog, Step } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
+import { generateSopLogPdf } from '@sopwise/modules/experiment-logs/utils/pdf-report-generator';
+import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.service';
+import { IFileBody } from '@sopwise/modules/file-manager/types';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { ExperimentLogSchema, StepSchema, UpdateLogSchema } from '@sopwise/types/experiment-logs.types';
 @Injectable()
 export class ExperimentLogsService {
-  constructor(private readonly prismaService: PrismaService, private readonly pagination: PaginationService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly pagination: PaginationService,
+    private readonly fileManager: FileManagerService,
+  ) {}
 
   selector = {
     id: true,
@@ -20,6 +27,7 @@ export class ExperimentLogsService {
     total_time: true,
     userId: true,
     steps: true,
+    url: true,
   };
 
   async getLogsByUserAndSop(userId: string, sopId: string) {
@@ -54,7 +62,10 @@ export class ExperimentLogsService {
 
   // TODO : HOW WILL THE WE SEARCH BY SOP NAME/ USER NAME IF ITS NOT PART OF EXPERIMENT LOG
   async getAllLogs(query: PaginationQueryDto) {
-    const logs = await this.pagination.paginate<ExperimentLog>('ExperimentLog', query, { ...this.selector });
+    const logs = await this.pagination.paginate<ExperimentLog>('ExperimentLog', query, {
+      ...this.selector,
+      steps: false,
+    });
 
     if (!logs?.data?.data) return logs;
 
@@ -115,8 +126,6 @@ export class ExperimentLogsService {
     });
   }
 
-  async getPDFReport(id: string) {}
-
   async deleteLog(id: string) {
     return this.prismaService.experimentLog.delete({ where: { id } });
   }
@@ -139,5 +148,66 @@ export class ExperimentLogsService {
 
   async getLogByUserId(id: string) {
     return this.prismaService.experimentLog.findMany({ where: { userId: id } });
+  }
+
+  private async uploadFile({ file, user_id, audit_id }: { file: any; user_id: string; audit_id: string }) {
+    const { file: url } = await this.fileManager.uploadFileAws(
+      {
+        createdAt: new Date(),
+        file: file as any,
+        title: `audit-log-${audit_id}`,
+        visibility: 'public',
+        updatedAt: new Date(),
+      },
+      user_id,
+      file as IFileBody,
+    );
+
+    return url;
+  }
+
+  async getPDFReport(id: string) {
+    try {
+      return this.prismaService.$transaction(
+        async (trx) => {
+          const experimentLog = await trx.experimentLog.findFirst({
+            where: { id },
+            select: this.selector,
+          });
+          if (experimentLog.url) return { url: experimentLog.url };
+          const sop = await trx.sop.findFirst({
+            where: { id: experimentLog.sopId },
+            select: { title: true, description: true, id: true },
+          });
+          const userOnExp = await trx.sopWiseUser.findFirst({
+            where: { id: experimentLog.userId },
+            select: { name: true, email: true, id: true },
+          });
+
+          const final = { ...experimentLog, sopName: sop.title, authorName: userOnExp.name };
+          if (final) {
+            const file = await generateSopLogPdf(final);
+            const url = await this.uploadFile({
+              file,
+              user_id: userOnExp.id,
+              audit_id: experimentLog.id,
+            });
+            await trx.experimentLog.update({
+              where: { id },
+              data: { url },
+            });
+
+            return { url };
+          }
+          return null;
+        },
+        {
+          timeout: 60000,
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      throw new Error('Something went wrong while generating the report, please try again later');
+    }
   }
 }

@@ -165,6 +165,13 @@ export class ExperimentLogsController {
   }
 
   @Get('generate-pdf/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get audit report pdf url' })
+  @ApiResponse({
+    status: 200,
+  })
   async getPDFReport(@Param('id') id: string) {
     return await this.experimentLogsService.getPDFReport(id);
   }
