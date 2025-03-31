@@ -163,4 +163,16 @@ export class ExperimentLogsController {
   async getStepById(@Param('id') id: string) {
     return await this.experimentLogsService.getStepById(id);
   }
+
+  @Post('generate-pdf/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get audit report pdf url' })
+  @ApiResponse({
+    status: 200,
+  })
+  async getPDFReport(@Param('id') id: string) {
+    return await this.experimentLogsService.getPDFReport(id);
+  }
 }
