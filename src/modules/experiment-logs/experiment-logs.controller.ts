@@ -164,7 +164,7 @@ export class ExperimentLogsController {
     return await this.experimentLogsService.getStepById(id);
   }
 
-  @Get('generate-pdf/:id')
+  @Post('generate-pdf/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
