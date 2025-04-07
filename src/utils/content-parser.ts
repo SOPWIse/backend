@@ -13,10 +13,7 @@ import { CheerioAPI, load, type Cheerio } from 'cheerio';
 import { v4 as uuidv4 } from 'uuid';
 
 let counter = 0;
-type ComponentParser = (
-  $element: Cheerio<never>,
-  $: CheerioAPI,
-) => BaseComponent | null;
+type ComponentParser = ($element: Cheerio<never>, $: CheerioAPI) => BaseComponent | null;
 
 export class ContentParser {
   private componentParsers: Map<string, ComponentParser>;
@@ -44,7 +41,7 @@ export class ContentParser {
     const $subtitle = $element.find('p');
     return {
       type: 'title-section',
-      pk: uuidv4(),
+      pk: uuidv4()?.concat('_title'),
       title: $title.text(),
       subtitle: $subtitle.text(),
       children: [],
@@ -55,25 +52,29 @@ export class ContentParser {
     counter++;
     return {
       type: 'title-section',
-      pk: uuidv4(),
+      pk: uuidv4().concat('_procedure'),
       title: `Step ${counter}`,
       subtitle: '',
       children: [],
     };
   };
 
-  private parseInputField = ($element: Cheerio<never>): InputField => ({
-    type: 'input-field',
-    pk: uuidv4(),
-    placeholder: $element.attr('placeholder') || '',
-    children: [],
-  });
+  private parseInputField = ($element: Cheerio<never>): InputField => {
+    const $input = $element.find('input[type="text"]');
+    return {
+      type: 'input-field',
+      pk: uuidv4().concat('_input'),
+      label: $element.text(),
+      placeholder: $input.attr('placeholder') || '',
+      children: [],
+    };
+  };
 
   private parseCheckbox = ($element: Cheerio<never>): CheckboxField => {
     const $input = $element.find('input[type="checkbox"]');
     return {
       type: 'checkbox',
-      pk: uuidv4(),
+      pk: uuidv4().concat('_checkbox'),
       label: $element.text(),
       checked: $input.prop('checked') === 'true',
       children: [],
@@ -84,7 +85,7 @@ export class ContentParser {
     const $input = $element.find('input[type="radio"]');
     return {
       type: 'radio-button',
-      pk: uuidv4(),
+      pk: uuidv4().concat('_radio'),
       label: $element.text(),
       name: $input.attr('name') || '',
       checked: $input.prop('checked') === 'true',
@@ -129,10 +130,7 @@ export class ContentParser {
     };
   };
 
-  private parseElementRecursive = (
-    $element: Cheerio<any>,
-    $: CheerioAPI,
-  ): BaseComponent | null => {
+  private parseElementRecursive = ($element: Cheerio<any>, $: CheerioAPI): BaseComponent | null => {
     let component: BaseComponent | null = null;
 
     if ($element.is('input[type="checkbox"]')) {
@@ -144,16 +142,13 @@ export class ContentParser {
       $element.is('input[type="email"]') ||
       $element.is('input[type="number"]')
     ) {
-      component = this.parseInputField($element as Cheerio<never>);
+      component = this.parseInputField($element.parent() as Cheerio<never>);
     } else if ($element.is('textarea')) {
       component = this.parseTextArea($element as Cheerio<never>);
     } else {
       const dataId = $element.attr('data-id');
       if (dataId && this.componentParsers.has(dataId)) {
-        component = this.componentParsers.get(dataId)!(
-          $element as Cheerio<never>,
-          $,
-        );
+        component = this.componentParsers.get(dataId)!($element as Cheerio<never>, $);
       } else {
         component = this.parseHtmlContent($element);
       }
@@ -244,10 +239,7 @@ export class ContentParser {
 
             if ($li.attr('data-id') === 'procedure-li') {
               // Finalize current section only if it has a title
-              if (
-                currentSection.title ||
-                currentSection.components.length > 0
-              ) {
+              if (currentSection.title || currentSection.components.length > 0) {
                 sections.push(currentSection);
               }
               const newSection = {
