@@ -13,6 +13,7 @@ export interface TitleSection extends BaseComponent {
 export interface InputField extends BaseComponent {
   type: 'input-field';
   placeholder?: string;
+  label: string;
 }
 
 export interface CheckboxField extends BaseComponent {
