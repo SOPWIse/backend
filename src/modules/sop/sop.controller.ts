@@ -22,7 +22,6 @@ import { SopService } from '@sopwise/modules/sop/sop.service';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
 import { Roles } from '@sopwise/roles/roles.decorator';
 import { RolesGuard } from '@sopwise/roles/roles.guard';
-import { createParser } from '@sopwise/utils/content-parser';
 import multer from 'fastify-multer';
 
 const upload = multer({ dest: 'uploads/' });
@@ -218,8 +217,19 @@ export class SopController {
     return await this.sopService.patchContentResolveComment(id, commentId, body.content);
   }
 
-  @Post('get-parsed')
-  async getParsed(@Body() body: string) {
-    return createParser.parse(body);
+  // @Post('get-parsed')
+  // async getParsed(@Body() body: string) {
+  //   return createParser.parse(body);
+  // }
+
+  @Get('/my-sop/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get SOP by user ID',
+  })
+  async getMySop(@Param('id') id: string) {
+    return await this.sopService.findSopByUserId(id);
   }
 }
