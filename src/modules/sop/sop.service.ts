@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Sop } from '@prisma/client';
 import fileConverter from '@sopwise/common/file-converter/file-converter';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
@@ -99,10 +95,7 @@ export class SopService {
   //  Don't add try catch block in this function
   async uploadFile(id: string, authorId: string) {
     const content = await this.findById(id);
-    const file = await fileConverter.generatePdfAsMulterFile(
-      content.title,
-      content.content,
-    );
+    const file = await fileConverter.generatePdfAsMulterFile(content.title, content.content);
     const data = {
       title: content.title,
       visibility: 'public',
@@ -111,11 +104,7 @@ export class SopService {
       createdAt: new Date(),
       file: file as any,
     };
-    const { file: url } = await this.fileManager.uploadFileAws(
-      data,
-      authorId,
-      file,
-    );
+    const { file: url } = await this.fileManager.uploadFileAws(data, authorId, file);
     return url;
   }
 
@@ -211,11 +200,7 @@ export class SopService {
     }
   }
 
-  async patchContentCreateComment(
-    id: string,
-    content: string,
-    comment: CreateComment,
-  ) {
+  async patchContentCreateComment(id: string, content: string, comment: CreateComment) {
     return this.prisma.$transaction(async (trx) => {
       const approval = await trx.approval.findFirst({
         where: { contentId: id },
@@ -237,11 +222,7 @@ export class SopService {
     });
   }
 
-  async patchContentResolveComment(
-    id: string,
-    commentId: string,
-    content: string,
-  ) {
+  async patchContentResolveComment(id: string, commentId: string, content: string) {
     return this.prisma.$transaction(async (trx) => {
       const com = await this.commentService.editComment(commentId, {
         status: 'RESOLVED',
@@ -253,6 +234,15 @@ export class SopService {
         },
       });
       return com;
+    });
+  }
+
+  async findSopByUserId(userId: string) {
+    return await this.prisma.sop.findMany({
+      where: {
+        authorId: userId,
+      },
+      select: this.select,
     });
   }
 }
