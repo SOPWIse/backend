@@ -216,4 +216,20 @@ export class SopController {
   ) {
     return await this.sopService.patchContentResolveComment(id, commentId, body.content);
   }
+
+  // @Post('get-parsed')
+  // async getParsed(@Body() body: string) {
+  //   return createParser.parse(body);
+  // }
+
+  @Get('/my-sop/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get SOP by user ID',
+  })
+  async getMySop(@Param('id') id: string) {
+    return await this.sopService.findSopByUserId(id);
+  }
 }
