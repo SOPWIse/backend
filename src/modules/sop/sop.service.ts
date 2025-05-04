@@ -47,6 +47,13 @@ export class SopService {
   }
 
   async updateSop(id: string, body: Partial<CreateSop>) {
+    const getSop = await this.findById(id);
+    if (!getSop) {
+      throw new NotFoundException('SOP not found');
+    }
+    if (getSop.author.id !== body.authorId) {
+      throw new ForbiddenException('You are not authorized to update this SOP');
+    }
     return await this.prisma.sop.update({
       where: { id },
       data: sopSchema.parse(body),
