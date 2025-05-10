@@ -14,13 +14,7 @@ import {
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
-import {
-  ApiConsumes,
-  ApiOkResponse,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@webundsoehne/nest-fastify-file-upload/dist/interceptors';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces';
 
@@ -29,10 +23,7 @@ import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
 import { FileUploadErrorFactory } from '@sopwise/modules/file-manager/aws/s3/file-error-factory';
 import { FileDetailsResponseDTO } from '@sopwise/modules/file-manager/dto/file-upload-response.dto';
-import {
-  CreateFileDTO,
-  UpdateFileDTO,
-} from '@sopwise/modules/file-manager/dto/file-upload-s3.dto';
+import { CreateFileDTO, UpdateFileDTO } from '@sopwise/modules/file-manager/dto/file-upload-s3.dto';
 import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.service';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
 import { Roles } from '@sopwise/roles/roles.decorator';
@@ -40,6 +31,8 @@ import { RolesGuard } from '@sopwise/roles/roles.guard';
 
 @ApiTags('File Settings API')
 @Controller('files')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
 export class FileManagerController {
   constructor(private fileSettingService: FileManagerService) {}
 
@@ -50,7 +43,6 @@ export class FileManagerController {
   })
   @ApiConsumes('multipart/form-data')
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   @Post()
   async uploadFile(
@@ -66,13 +58,10 @@ export class FileManagerController {
   }
 
   @Get('all')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all SOPs',
-    description:
-      'Retrieves a paginated list of all SOPs. Only accessible to ADMIN and AUTHOR roles.',
+    description: 'Retrieves a paginated list of all SOPs. Only accessible to ADMIN and AUTHOR roles.',
   })
   @ApiResponse({
     status: 200,
@@ -103,10 +92,7 @@ export class FileManagerController {
     status: 200,
     description: 'The file has been successfully updated.',
   })
-  async update(
-    @Param('id') id: string,
-    @Body(ValidationPipe) updateFileDto: UpdateFileDTO,
-  ) {
+  async update(@Param('id') id: string, @Body(ValidationPipe) updateFileDto: UpdateFileDTO) {
     return this.fileSettingService.update(id, updateFileDto);
   }
 

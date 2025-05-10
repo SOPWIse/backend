@@ -33,7 +33,7 @@ export class UserController {
 
   @Get('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.VP)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all users with pagination' })
   @ApiResponse({ status: 200, description: 'Returns paginated list of users' })
@@ -49,18 +49,14 @@ export class UserController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update user by id' })
   @HttpCode(HttpStatus.OK)
-  async updateUser(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(id, updateUserDto);
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user by id' })
   @HttpCode(HttpStatus.OK)
-  @Roles(Role.ADMIN, Role.ASSISTANT, Role.AUTHOR)
   async getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);
   }
