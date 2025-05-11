@@ -35,12 +35,12 @@ export const imageFileFilter = (req: Request, file: Express.Multer.File, callbac
 @ApiTags('SOPs')
 @ApiBearerAuth()
 @Controller('sop')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN, Role.SCIENTIST, Role.VP, Role.TECHNICIAN)
 export class SopController {
   constructor(private readonly sopService: SopService) {}
 
   @Get('all')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all SOPs',
@@ -60,8 +60,6 @@ export class SopController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get SOP by ID',
@@ -78,8 +76,6 @@ export class SopController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update SOP by ID',
@@ -98,8 +94,6 @@ export class SopController {
 
   @Patch('/flow-data/:id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @ApiOperation({
     summary: 'Update SOP by ID',
     description: 'Updates the flow data of a specific SOP by its ID.',
@@ -116,8 +110,6 @@ export class SopController {
   }
 
   @Get('/flow-data/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get flow data of SOP by ID',
@@ -132,8 +124,6 @@ export class SopController {
   }
 
   @Post('/')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new SOP',
@@ -150,8 +140,6 @@ export class SopController {
   }
 
   @Patch('/approve/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Approve a SOP',
@@ -162,8 +150,6 @@ export class SopController {
   }
 
   @Patch('/reject/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Reject a SOP',
@@ -174,8 +160,6 @@ export class SopController {
   }
 
   @Patch('/publish/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Publish a SOP',
@@ -186,8 +170,6 @@ export class SopController {
   }
 
   @Post('/:id/comment')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Add comments to SOP',
@@ -202,8 +184,6 @@ export class SopController {
   }
 
   @Patch('/:id/comment/:comment_id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Add comments to SOP',
@@ -223,8 +203,6 @@ export class SopController {
   // }
 
   @Get('/my-sop/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get SOP by user ID',

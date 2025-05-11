@@ -1,3 +1,4 @@
+import { roleSchema } from '@sopwise/types/roles.types';
 import { z } from 'zod';
 
 const login = z.object({
@@ -10,7 +11,7 @@ const login = z.object({
 
 const register = z.object({
   email: z.string().email('Invalid email format'),
-  role: z.enum(['ADMIN', 'AUTHOR', 'ASSISTANT']),
+  role: roleSchema,
   name: z.string(),
   password: z
     .string()

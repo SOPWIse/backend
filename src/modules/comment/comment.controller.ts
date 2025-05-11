@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { Role, SopWiseUser } from '@prisma/client';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
 import { CommentService } from '@sopwise/modules/comment/comment.service';
@@ -19,17 +8,14 @@ import { Roles } from '@sopwise/roles/roles.decorator';
 import { RolesGuard } from '@sopwise/roles/roles.guard';
 
 @Controller('comment')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.SCIENTIST, Role.AUTHOR, Role.VP, Role.ADMIN)
 export class CommentController {
   constructor(private readonly comment: CommentService) {}
 
   @Post('/')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.CREATED)
-  async createComment(
-    @Body() body: CreateCommentDto,
-    @GetCurrentUser() user: SopWiseUser,
-  ) {
+  async createComment(@Body() body: CreateCommentDto, @GetCurrentUser() user: SopWiseUser) {
     return this.comment.createComment({
       authorId: user?.id,
       ...body,
@@ -37,29 +23,20 @@ export class CommentController {
   }
 
   @Patch('/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
-  async updateComment(
-    @Param('id') id: string,
-    @Body() body: Partial<CreateCommentDto>,
-  ) {
+  async updateComment(@Param('id') id: string, @Body() body: Partial<CreateCommentDto>) {
     return this.comment.editComment(id, {
       ...body,
     });
   }
 
   @Get('/:content_id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   async getCommentByContentId(@Param('content_id') id: string) {
     return this.comment.listCommentsByContentId(id);
   }
 
   @Delete('/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.AUTHOR)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('id') id: string) {
     return this.comment.deleteComment(id);
