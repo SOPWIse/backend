@@ -30,7 +30,6 @@ export class ExperimentLogsController {
   constructor(private readonly experimentLogsService: ExperimentLogsService) {}
 
   @Post('/')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiResponse({
     status: 401,
@@ -47,7 +46,6 @@ export class ExperimentLogsController {
 
   @Get('/all')
   @ApiOperation({ summary: 'Create a new experiment log' })
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: 201,
@@ -61,7 +59,6 @@ export class ExperimentLogsController {
   }
 
   @Post('step')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new step for an experiment log' })
   @ApiResponse({
@@ -73,7 +70,6 @@ export class ExperimentLogsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update an experiment log' })
   @ApiResponse({
@@ -85,7 +81,6 @@ export class ExperimentLogsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete an experiment log' })
   @ApiResponse({
@@ -97,7 +92,6 @@ export class ExperimentLogsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get an experiment log by its ID' })
   @ApiResponse({
@@ -109,7 +103,6 @@ export class ExperimentLogsController {
   }
 
   @Get('sop/:sopId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get experiment logs by SOP ID' })
   @ApiResponse({
@@ -121,7 +114,6 @@ export class ExperimentLogsController {
   }
 
   @Get('user/:userId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get experiment logs by User ID' })
   @ApiResponse({
@@ -133,7 +125,6 @@ export class ExperimentLogsController {
   }
 
   @Get('/:logId/steps')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get steps for a specific experiment log' })
   @ApiResponse({
@@ -145,7 +136,6 @@ export class ExperimentLogsController {
   }
 
   @Get('step/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a specific step by its ID' })
   @ApiResponse({
@@ -157,7 +147,6 @@ export class ExperimentLogsController {
   }
 
   @Post('generate-pdf/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get audit report pdf url' })
   @ApiResponse({
