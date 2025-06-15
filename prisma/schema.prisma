@@ -21,6 +21,8 @@ model SopWiseUser {
   requestedApprovals Approval[] @relation("requester")
   Sop                Sop[]
   Comment            Comment[]
+
+  experimentLogs ExperimentLog[] @relation("experiment_logs")
 }
 
 model Approval {
@@ -55,6 +57,8 @@ model Sop {
   contentUrl  String?     @map("content_url")
   author      SopWiseUser @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comment     Comment[]
+
+  ExperimentLog ExperimentLog[] @relation("sops")
 }
 
 model FileSettings {
@@ -102,7 +106,12 @@ model ExperimentLog {
   meta_data             Json?    @map("meta_data")
   completion_percentage Float?
   url                   String?
-  steps                 Step[]
+
+  // New relations added
+  user SopWiseUser @relation("experiment_logs", fields: [userId], references: [id], onDelete: Cascade)
+  sop  Sop         @relation("sops", fields: [sopId], references: [id], onDelete: Cascade)
+
+  steps Step[]
 
   @@map("experiment_logs")
 }

@@ -17,6 +17,7 @@ import { ApprovalsService } from './approvals/approvals.service';
 import { CommentModule } from './comment/comment.module';
 import { SopModule } from './sop/sop.module';
 import { ExperimentLogsModule } from './experiment-logs/experiment-logs.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ExperimentLogsModule } from './experiment-logs/experiment-logs.module';
     SopModule,
     CommentModule,
     ExperimentLogsModule,
+    AnalyticsModule,
   ],
   providers: [
     AuthService,

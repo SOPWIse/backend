@@ -132,6 +132,7 @@ export class SopService {
             where: { id },
             data: {
               status: 'PUBLISHED',
+              publishedAt: new Date().toISOString(),
               contentUrl: url,
             },
           });
