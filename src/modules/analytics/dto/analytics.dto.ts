@@ -1,40 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Prisma } from "@prisma/client";
-import { Type } from "class-transformer";
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsObject,
-  IsOptional,
-  IsString,
-  ValidateNested
-} from "class-validator";
-
-export interface SopwiseAnalyticsFilter {
-  filters?: Record<string, any>;
-  search?: string;
-  role?: string;
-  searchFields?: string[];
-  dateField?: string;
-  startDate?: string;
-  endDate?: string;
-}
-
-export interface ModelAnalyticsRequest {
-  model: keyof typeof Prisma.ModelName;
-  operation: AnalyticsOperation;
-  args?: Record<string, any>;
-  filter?: SopwiseAnalyticsFilter;
-}
-
-export class MultiModelAnalytics {
-  models: ModelAnalyticsRequest[];
-}
-
-
-
-
+import { ApiProperty } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { IsArray, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 
 export enum AnalyticsOperation {
@@ -44,15 +11,12 @@ export enum AnalyticsOperation {
   AGGREGATE = 'aggregate',
 }
 
-
-
 export class SopwiseAnalyticsFilterDto {
-
   @ApiProperty({
     description: 'Filters to apply on the analytics query',
     type: Object,
     required: false,
-    example: { isListed: true, isDeleted: false }
+    example: { isListed: true, isDeleted: false },
   })
   @IsOptional()
   @IsObject()
@@ -62,7 +26,7 @@ export class SopwiseAnalyticsFilterDto {
     description: 'Role to filter results by',
     type: String,
     required: false,
-    example: 'ADMIN'
+    example: 'ADMIN',
   })
   @IsOptional()
   @IsString()
@@ -72,7 +36,7 @@ export class SopwiseAnalyticsFilterDto {
     description: 'Search term to filter results',
     type: String,
     required: false,
-    example: 'example search term'
+    example: 'example search term',
   })
   @IsOptional()
   @IsString()
@@ -82,7 +46,7 @@ export class SopwiseAnalyticsFilterDto {
     description: 'Fields to search in',
     type: [String],
     required: false,
-    example: ['title', 'description']
+    example: ['title', 'description'],
   })
   @IsOptional()
   @IsArray()
@@ -93,7 +57,7 @@ export class SopwiseAnalyticsFilterDto {
     description: 'Field to apply date filters on',
     type: String,
     required: false,
-    example: 'createdAt'
+    example: 'createdAt',
   })
   @IsOptional()
   @IsString()
@@ -103,7 +67,7 @@ export class SopwiseAnalyticsFilterDto {
     description: 'Start date for filtering results',
     type: String,
     required: false,
-    example: '2023-01-01T00:00:00Z'
+    example: '2023-01-01T00:00:00Z',
   })
   @IsOptional()
   @IsString()
@@ -113,7 +77,7 @@ export class SopwiseAnalyticsFilterDto {
     description: 'End date for filtering results',
     type: String,
     required: false,
-    example: '2023-12-31T23:59:59Z'
+    example: '2023-12-31T23:59:59Z',
   })
   @IsOptional()
   @IsString()
@@ -121,25 +85,23 @@ export class SopwiseAnalyticsFilterDto {
 }
 
 export class ModelAnalyticsRequestDto {
-
   @ApiProperty({
     description: 'The model name for the analytics request',
     type: String,
     example: 'Sop',
     enum: Object.keys(Prisma.ModelName),
-    required: true
+    required: true,
   })
   @IsNotEmpty()
   @IsString()
   model: keyof typeof Prisma.ModelName;
-
 
   @ApiProperty({
     description: 'The operation to perform on the model',
     type: String,
     enum: AnalyticsOperation,
     example: AnalyticsOperation.COUNT,
-    required: true
+    required: true,
   })
   @IsNotEmpty()
   @IsEnum(AnalyticsOperation)
@@ -149,7 +111,7 @@ export class ModelAnalyticsRequestDto {
     description: 'Additional arguments for the operation',
     type: Object,
     required: false,
-    example: { includeCount: true, fields: { avg: ['total_time', 'completion_percentage'] } }
+    example: { includeCount: true, fields: { avg: ['total_time', 'completion_percentage'] } },
   })
   @IsOptional()
   @IsObject()
@@ -158,7 +120,7 @@ export class ModelAnalyticsRequestDto {
   @ApiProperty({
     description: 'Filter criteria for the analytics request',
     type: SopwiseAnalyticsFilterDto,
-    required: false
+    required: false,
   })
   @IsNotEmpty()
   @ValidateNested()
@@ -167,12 +129,11 @@ export class ModelAnalyticsRequestDto {
   filter?: SopwiseAnalyticsFilterDto;
 }
 
-
 export class MultiModelAnalyticsDto {
   @ApiProperty({
     description: 'Array of model analytics requests',
     type: [ModelAnalyticsRequestDto],
-    required: true
+    required: true,
   })
   @IsArray()
   @ValidateNested({ each: true })

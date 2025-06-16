@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
-import { SopwiseAnalyticsFilter } from "@sopwise/modules/analytics/dto/analytics.dto";
+import { ModelName, SopwiseAnalyticsFilter } from "@sopwise/types/analytics.types";
 
-export function buildGenericWhere(filter: SopwiseAnalyticsFilter, model?: keyof typeof Prisma.ModelName): any {
+export function buildGenericWhere(filter: SopwiseAnalyticsFilter, model?: ModelName): any {
   const where: Record<string, any> = {};
   const {
     filters = {},
