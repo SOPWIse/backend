@@ -5,6 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { HttpExceptionFilter } from '@sopwise/common/exceptions/exception-filter';
 import { CompressionConfig } from '@sopwise/config/compression/compression.config';
 import { CsrfProtectionConfig } from '@sopwise/config/security/csrf-protection.config';
 import { HelmetConfig } from '@sopwise/config/security/helmet.config';
@@ -18,6 +19,7 @@ export default class FastifyServerApplication {
 
   protected async configureServices(appModule: unknown) {
     this.app.enableCors();
+    this.app.useGlobalFilters(new HttpExceptionFilter());
     this.app.useGlobalPipes(
       new ValidationPipe({
         transform: true,

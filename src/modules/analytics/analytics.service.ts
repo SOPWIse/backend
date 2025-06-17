@@ -1,57 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { buildGenericWhere } from "@sopwise/modules/analytics/analytics.utls";
-import { ModelAnalyticsRequest, MultiModelAnalytics, SopwiseAnalyticsFilter } from "@sopwise/modules/analytics/dto/analytics.dto";
-import { PrismaService } from "@sopwise/prisma/prisma.service";
-
-
-// startDate, endDate formatting = "YYYY-MM-DD"
-// {
-//   "models": [
-//     {
-//       "model": "Sop",
-//       "operation": "count",
-//       "filter": {
-// 				"filters": {"isListed": true, "isDeleted": false}
-//       }
-//     },
-//     {
-//       "model": "SopWiseUser",
-//       "operation": "count"
-//     },
-//     {
-//       "model": "ExperimentLog",
-//       "operation": "count"
-//     },
-// 		{
-// 			"model": "ExperimentLog",
-//       "operation": "aggregate",
-// 			"args": {
-// 				"includeCount": true,
-// 				"fields": {
-// 					"avg": ["total_time", "completion_percentage"]
-// 				}
-// 			}
-// 		},
-// 		{
-// 			"model": "experimentLog",
-// 			"operation": "groupBy",
-// 			"args": {
-// 				"by": ["userId"],
-// 				"aggregations": {
-// 					"_count": {
-// 						"_all": true
-// 					}
-// 				},
-// 				"orderBy": {
-// 					"_count": {
-// 						"userId": "desc"
-// 					}
-// 				}
-// 			}
-// 		}
-//   ]
-// }
-
+import { Injectable } from '@nestjs/common';
+import { buildGenericWhere } from '@sopwise/modules/analytics/analytics.utls';
+import { PrismaService } from '@sopwise/prisma/prisma.service';
+import { ModelAnalyticsRequest, MultiModelAnalytics, SopwiseAnalyticsFilter } from '@sopwise/types/analytics.types';
 
 
 @Injectable()
@@ -59,28 +9,30 @@ export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async runAnalytics(dto: MultiModelAnalytics): Promise<any> {
-    const results = await Promise.all(
-      dto.models.map((modelReq) => this.processModelRequest(modelReq))
-    );
-
+    const results = await Promise.all(dto.models.map((modelReq) => this.processModelRequest(modelReq)));
     return results;
   }
 
   private async processModelRequest(modelReq: ModelAnalyticsRequest) {
-    const { model, operation, args = {}, filter = {} } = modelReq;
+    const { model, filter = {} } = modelReq;
     const where = buildGenericWhere(filter, model);
 
-    switch (operation) {
+    switch (modelReq.operation) {
       case 'count':
         return this.handleCount(model, where);
-      case 'findMany':
-        return this.handleFindMany(model, where, args.take);
-      case 'groupBy':
-        return this.handleGroupBy(model, where, args.by, args.aggregations, args.orderBy);
-      case 'aggregate':
-        return this.handleAggregate(model, where, args.fields);
+      case 'findMany': {
+        const take = modelReq.args?.take ?? 100;
+        return this.handleFindMany(model, where, take);
+      }
+      case 'groupBy': {
+        const { by, aggregations, orderBy } = modelReq.args;
+        return this.handleGroupBy(model, where, by, aggregations, orderBy);
+      }
+      case 'aggregate': {
+        return this.handleAggregate(model, where, modelReq.args.fields);
+      }
       default:
-        throw new Error(`Unsupported operation: ${operation}`);
+        throw new Error(`Unsupported operation`);
     }
   }
 
@@ -89,8 +41,12 @@ export class AnalyticsService {
     return { model, operation: 'count', result };
   }
 
-  private async handleFindMany(model: string, where: any, take = 100) {
-    const result = await this.prisma[model].findMany({ where, take });
+  private async handleFindMany(model: string, where: any, take?: number) {
+    if (take) {
+      const result = await this.prisma[model].findMany({ where, take });
+      return { model, operation: 'findMany', result };
+    }
+    const result = await this.prisma[model].findMany({ where });
     return { model, operation: 'findMany', result };
   }
 
@@ -98,8 +54,14 @@ export class AnalyticsService {
     model: string,
     where: any,
     by?: string[],
-    aggregations?: Record<string, any>,
-    orderBy?: any
+    fields?: {
+      count?: boolean | string[];
+      sum?: string[];
+      avg?: string[];
+      min?: string[];
+      max?: string[];
+    },
+    orderBy?: any,
   ) {
     if (!by || by.length === 0) {
       throw new Error(`Missing 'by' fields for groupBy on ${model}`);
@@ -108,14 +70,44 @@ export class AnalyticsService {
     const groupByArgs: any = {
       by,
       where,
-      ...aggregations,
     };
 
     if (orderBy) {
       groupByArgs.orderBy = orderBy;
     }
 
-    if (!aggregations || Object.keys(aggregations).length === 0) {
+    if (fields) {
+
+      if (fields.count) {
+        if (typeof fields.count === 'boolean') {
+          groupByArgs._count = true;
+        } else if (fields.count.length > 0) {
+          groupByArgs._count = Object.fromEntries(fields.count.map((field) => [field, true]));
+        }
+      }
+
+
+      if (fields.sum?.length) {
+        groupByArgs._sum = Object.fromEntries(fields.sum.map((field) => [field, true]));
+      }
+
+
+      if (fields.avg?.length) {
+        groupByArgs._avg = Object.fromEntries(fields.avg.map((field) => [field, true]));
+      }
+
+
+      if (fields.min?.length) {
+        groupByArgs._min = Object.fromEntries(fields.min.map((field) => [field, true]));
+      }
+
+
+      if (fields.max?.length) {
+        groupByArgs._max = Object.fromEntries(fields.max.map((field) => [field, true]));
+      }
+    }
+
+    if (!fields || Object.keys(groupByArgs).filter((k) => k.startsWith('_')).length === 2) {
       groupByArgs._count = true;
     }
 
@@ -142,89 +134,75 @@ export class AnalyticsService {
     };
   }
 
-
-
   private async handleAggregate(
-  model: string,
-  where: any,
-  fields?: { sum?: string[]; avg?: string[]; min?: string[]; max?: string[]; count?: string[] },
-) {
-  if (!fields) {
-    throw new Error(`Missing 'fields' for aggregate on ${model}`);
-  }
-
-  const aggregateArgs: any = { where };
-  const { sum, avg, min, max, count } = fields;
-
-  if (sum?.length) {
-    aggregateArgs._sum = Object.fromEntries(sum.map((f) => [f, true]));
-  }
-  if (avg?.length) {
-    aggregateArgs._avg = Object.fromEntries(avg.map((f) => [f, true]));
-  }
-  if (min?.length) {
-    aggregateArgs._min = Object.fromEntries(min.map((f) => [f, true]));
-  }
-  if (max?.length) {
-    aggregateArgs._max = Object.fromEntries(max.map((f) => [f, true]));
-  }
-  
-
-  const hasSomething =
-    aggregateArgs._sum ||
-    aggregateArgs._avg ||
-    aggregateArgs._min ||
-    aggregateArgs._max
-   
-
-  if (!hasSomething) {
-    throw new Error(
-      `No valid aggregate fields provided for model ${model}: ${JSON.stringify(fields)}`
-    );
-  }
-
-  console.log(`Running aggregate on model: ${model}`, JSON.stringify(aggregateArgs, null, 2));
-
-  const rawResult = await this.prisma[model].aggregate(aggregateArgs);
-  const formattedResult: Record<string, any> = {};
-  // Find distinct count for the _count field
-  if(count && count.length > 0) {
-    const countRes = await this.prisma[model].groupBy({
-      by: [...count],
-      where,
-    });
-    formattedResult.count = countRes.length;
-  }
-
-  for (const key of Object.keys(rawResult)) {
-    const metric = rawResult[key]; 
-    for (const field of Object.keys(metric)) {
-      if( field === '_all'){
-        formattedResult[`${key.slice(1)}_all`] = metric[field];
-        continue; 
-      };
-      formattedResult[`${key.slice(1)}_${field}`] = metric[field];
+    model: string,
+    where: any,
+    fields?: { sum?: string[]; avg?: string[]; min?: string[]; max?: string[]; count?: string[] },
+  ) {
+    if (!fields) {
+      throw new Error(`Missing 'fields' for aggregate on ${model}`);
     }
-  }
 
-  return {
-    model,
-    operation: 'aggregate',
-    result: formattedResult,
-  };
-  }
+    const aggregateArgs: any = { where };
+    const { sum, avg, min, max, count } = fields;
 
+    if (sum?.length) {
+      aggregateArgs._sum = Object.fromEntries(sum.map((f) => [f, true]));
+    }
+    if (avg?.length) {
+      aggregateArgs._avg = Object.fromEntries(avg.map((f) => [f, true]));
+    }
+    if (min?.length) {
+      aggregateArgs._min = Object.fromEntries(min.map((f) => [f, true]));
+    }
+    if (max?.length) {
+      aggregateArgs._max = Object.fromEntries(max.map((f) => [f, true]));
+    }
+
+    const hasSomething = aggregateArgs._sum || aggregateArgs._avg || aggregateArgs._min || aggregateArgs._max;
+
+    if (!hasSomething) {
+      throw new Error(`No valid aggregate fields provided for model ${model}: ${JSON.stringify(fields)}`);
+    }
+
+    const rawResult = await this.prisma[model].aggregate(aggregateArgs);
+    const formattedResult: Record<string, any> = {};
+
+    if (count && count.length > 0) {
+      const countRes = await this.prisma[model].groupBy({
+        by: [...count],
+        where,
+      });
+      formattedResult.count = countRes.length;
+    }
+
+    for (const key of Object.keys(rawResult)) {
+      const metric = rawResult[key];
+      for (const field of Object.keys(metric)) {
+        if (field === '_all') {
+          formattedResult[`${key.slice(1)}_all`] = metric[field];
+          continue;
+        }
+        formattedResult[`${key.slice(1)}_${field}`] = metric[field];
+      }
+    }
+
+    return {
+      model,
+      operation: 'aggregate',
+      result: formattedResult,
+    };
+  }
 
   async topActiveUsers(filter: SopwiseAnalyticsFilter) {
     const where = buildGenericWhere(filter || {});
 
-    
     const topUsers = await this.prisma.experimentLog.groupBy({
       by: ['userId'],
       _count: { userId: true },
       orderBy: { _count: { userId: 'desc' } },
       take: 5,
-      where: where 
+      where: where,
     });
 
     // return topUsers
@@ -233,87 +211,73 @@ export class AnalyticsService {
       return [];
     }
 
-    const userIds = topUsers.map(user => user.userId);
+    const userIds = topUsers.map((user) => user.userId);
 
-    
-    const [
-      pendingExp,
-      completedExp,
-      avgCompletionTime,
-      userDetails,
-      userLogs
-    ] = await Promise.all([
-      
+    const [pendingExp, completedExp, avgCompletionTime, userDetails, userLogs] = await Promise.all([
       this.prisma.experimentLog.groupBy({
         by: ['userId'],
         _count: { userId: true },
         where: {
           userId: { in: userIds },
           completion_percentage: { lt: 100 },
-          ...where
-        }
+          ...where,
+        },
       }),
-      
+
       this.prisma.experimentLog.groupBy({
         by: ['userId'],
         _count: { userId: true },
         where: {
           userId: { in: userIds },
           completion_percentage: { equals: 100 },
-          ...where
-        }
+          ...where,
+        },
       }),
-      
+
       this.prisma.experimentLog.groupBy({
         by: ['userId'],
         _avg: { total_time: true },
         where: {
           userId: { in: userIds },
           completion_percentage: { equals: 100 },
-          ...where
-        }
+          ...where,
+        },
       }),
-      
+
       this.prisma.sopWiseUser.findMany({
         where: { id: { in: userIds } },
-        select: { id: true, email: true, name: true }
+        select: { id: true, email: true, name: true },
       }),
-      
+
       this.prisma.experimentLog.findMany({
         select: { userId: true, sopId: true },
         where: { userId: { in: userIds }, ...where },
-        distinct: ['userId', 'sopId'] 
-      })
+        distinct: ['userId', 'sopId'],
+      }),
     ]);
 
-    
-    const userMap = new Map(userDetails.map(user => [user.id, user]));
+    const userMap = new Map(userDetails.map((user) => [user.id, user]));
 
-    
     const uniqueSopCounts = userLogs.reduce((acc, log) => {
       if (!acc[log.userId]) acc[log.userId] = new Set();
       acc[log.userId].add(log.sopId);
       return acc;
     }, {} as Record<string, Set<string>>);
 
-    
-    return topUsers.map(row => {
+    return topUsers.map((row) => {
       const userId = row.userId;
       const user = userMap.get(userId);
-      
+
       return {
         userId,
         numberOfExp: row._count.userId,
-        pendingExp: pendingExp.find(p => p.userId === userId)?._count.userId || 0,
-        completedExp: completedExp.find(p => p.userId === userId)?._count.userId || 0,
-        avgCompletionTime: avgCompletionTime.find(p => p.userId === userId)?._avg.total_time || 0,
+        pendingExp: pendingExp.find((p) => p.userId === userId)?._count.userId || 0,
+        completedExp: completedExp.find((p) => p.userId === userId)?._count.userId || 0,
+        avgCompletionTime: avgCompletionTime.find((p) => p.userId === userId)?._avg.total_time || 0,
         uniqueSopCount: uniqueSopCounts[userId]?.size || 0,
         userEmail: user?.email || null,
         userName: user?.name || null,
       };
     });
-}
-
-  
-
+  }
 }
