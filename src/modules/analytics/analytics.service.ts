@@ -3,7 +3,6 @@ import { buildGenericWhere } from '@sopwise/modules/analytics/analytics.utls';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { ModelAnalyticsRequest, MultiModelAnalytics, SopwiseAnalyticsFilter } from '@sopwise/types/analytics.types';
 
-
 @Injectable()
 export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -77,7 +76,6 @@ export class AnalyticsService {
     }
 
     if (fields) {
-
       if (fields.count) {
         if (typeof fields.count === 'boolean') {
           groupByArgs._count = true;
@@ -86,21 +84,17 @@ export class AnalyticsService {
         }
       }
 
-
       if (fields.sum?.length) {
         groupByArgs._sum = Object.fromEntries(fields.sum.map((field) => [field, true]));
       }
-
 
       if (fields.avg?.length) {
         groupByArgs._avg = Object.fromEntries(fields.avg.map((field) => [field, true]));
       }
 
-
       if (fields.min?.length) {
         groupByArgs._min = Object.fromEntries(fields.min.map((field) => [field, true]));
       }
-
 
       if (fields.max?.length) {
         groupByArgs._max = Object.fromEntries(fields.max.map((field) => [field, true]));
@@ -161,11 +155,6 @@ export class AnalyticsService {
 
     const hasSomething = aggregateArgs._sum || aggregateArgs._avg || aggregateArgs._min || aggregateArgs._max;
 
-    if (!hasSomething) {
-      throw new Error(`No valid aggregate fields provided for model ${model}: ${JSON.stringify(fields)}`);
-    }
-
-    const rawResult = await this.prisma[model].aggregate(aggregateArgs);
     const formattedResult: Record<string, any> = {};
 
     if (count && count.length > 0) {
@@ -176,14 +165,17 @@ export class AnalyticsService {
       formattedResult.count = countRes.length;
     }
 
-    for (const key of Object.keys(rawResult)) {
-      const metric = rawResult[key];
-      for (const field of Object.keys(metric)) {
-        if (field === '_all') {
-          formattedResult[`${key.slice(1)}_all`] = metric[field];
-          continue;
+    if (hasSomething) {
+      const rawResult = await this.prisma[model].aggregate(aggregateArgs);
+      for (const key of Object.keys(rawResult)) {
+        const metric = rawResult[key];
+        for (const field of Object.keys(metric)) {
+          if (field === '_all') {
+            formattedResult[`${key.slice(1)}_all`] = metric[field];
+            continue;
+          }
+          formattedResult[`${key.slice(1)}_${field}`] = metric[field];
         }
-        formattedResult[`${key.slice(1)}_${field}`] = metric[field];
       }
     }
 
