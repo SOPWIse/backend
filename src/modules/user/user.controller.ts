@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Patch,
+  Post,
   Query,
   UseGuards,
   ValidationPipe,
@@ -59,5 +60,13 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);
+  }
+
+  @Post('get-users')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get user list by ids' })
+  @HttpCode(HttpStatus.OK)
+  async getUserByListOfIds(@Body() ids: string[]) {
+    return this.userService.getUsersByIds(ids);
   }
 }
