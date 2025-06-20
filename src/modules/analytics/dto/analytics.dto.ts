@@ -29,8 +29,8 @@ export class SopwiseAnalyticsFilterDto {
     example: 'ADMIN',
   })
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsArray()
+  role?: string[];
 
   @ApiProperty({
     description: 'Search term to filter results',

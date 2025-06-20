@@ -8,7 +8,7 @@ export type ModelName = z.infer<typeof ModelNameSchema>;
 export const SopwiseAnalyticsFilterSchema = z.object({
   filters: z.record(z.any()).optional(),
   search: z.string().optional(),
-  role: z.string().optional(),
+  role: z.array(z.string()).optional(),
   searchFields: z.array(z.string()).optional(),
   dateField: z.string().optional(),
   startDate: z.string().optional(),
@@ -50,7 +50,7 @@ export const ModelAnalyticsRequestSchema = z.discriminatedUnion('operation', [
         .refine(
           (fields) => fields.sum?.length || fields.avg?.length || fields.min?.length || fields.max?.length,
           'At least one aggregation field (sum/avg/min/max) must be provided',
-        ),
+        ).optional(),
       orderBy: z.any().optional(),
     }),
   }),
@@ -67,9 +67,9 @@ export const ModelAnalyticsRequestSchema = z.discriminatedUnion('operation', [
           count: z.array(z.string()).optional(),
         })
         .refine(
-          (fields) => fields.sum?.length || fields.avg?.length || fields.min?.length || fields.max?.length,
+          (fields) => fields.sum?.length || fields.avg?.length || fields.min?.length || fields.max?.length || fields.count?.length,
           'At least one aggregation field (sum/avg/min/max) must be provided',
-        ),
+        ).optional(),
     }),
   }),
 ]);

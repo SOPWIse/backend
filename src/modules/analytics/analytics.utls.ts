@@ -42,7 +42,9 @@ export function buildGenericWhere(filter: SopwiseAnalyticsFilter, model?: ModelN
   if( role && model && model in mapUserColumnOnModel ) {
     const userColumn = mapUserColumnOnModel[model as keyof allowedModels];
     where[userColumn] = {
-      role: role,
+      role: {
+        in: role
+      },
     };
   }
 
