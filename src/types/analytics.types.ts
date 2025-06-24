@@ -48,7 +48,12 @@ export const ModelAnalyticsRequestSchema = z.discriminatedUnion('operation', [
           count: z.array(z.string()).optional(),
         })
         .refine(
-          (fields) => fields.sum?.length || fields.avg?.length || fields.min?.length || fields.max?.length,
+          (fields) =>
+            fields.sum?.length ||
+            fields.avg?.length ||
+            fields.min?.length ||
+            fields.max?.length ||
+            fields.count?.length,
           'At least one aggregation field (sum/avg/min/max) must be provided',
         )
         .optional(),
