@@ -63,7 +63,8 @@ export class UserController {
   }
 
   @Post('get-users')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.VP)
   @ApiOperation({ summary: 'Get user list by ids' })
   @HttpCode(HttpStatus.OK)
   async getUserByListOfIds(@Body() ids: string[]) {
