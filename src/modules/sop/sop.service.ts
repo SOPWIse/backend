@@ -77,6 +77,18 @@ export class SopService {
     return JSON.parse(sop.flowData as string) ?? [];
   }
 
+  async getSopByListOfIds(ids: string[]) {
+    const sops = await this.prisma.sop.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      select: this.select,
+    });
+    return sops;
+  }
+
   async findById(id: string) {
     try {
       const sop = await this.prisma.sop.findFirst({
@@ -132,6 +144,7 @@ export class SopService {
             where: { id },
             data: {
               status: 'PUBLISHED',
+              publishedAt: new Date().toISOString(),
               contentUrl: url,
             },
           });

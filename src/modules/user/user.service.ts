@@ -7,23 +7,10 @@ import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly paginationService: PaginationService,
-  ) {}
+  constructor(private readonly prisma: PrismaService, private readonly paginationService: PaginationService) {}
 
-  async createUser(
-    email: string,
-    name: string,
-    hash: string,
-    role: Role,
-    provider?: string,
-    metaData?: string,
-  ) {
-    const res = await this.prisma.safeCreate<
-      SopWiseUser,
-      Prisma.SopWiseUserCreateInput
-    >('sopWiseUser', {
+  async createUser(email: string, name: string, hash: string, role: Role, provider?: string, metaData?: string) {
+    const res = await this.prisma.safeCreate<SopWiseUser, Prisma.SopWiseUserCreateInput>('sopWiseUser', {
       email,
       name,
       hash,
@@ -91,6 +78,21 @@ export class UserService {
       provider: true,
       createdAt: true,
       updatedAt: true,
+    });
+  }
+
+  async getUsersByIds(ids: string[]) {
+    return this.prisma.sopWiseUser.findMany({
+      where: { id: { in: ids } },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        provider: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 }

@@ -9,7 +9,7 @@ import {
   Post,
   Query,
   UseGuards,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
 
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -74,6 +74,16 @@ export class SopController {
   async getSopById(@Param('id') id: string) {
     return await this.sopService.findById(id);
   }
+
+
+
+  @Post("get-sops")
+  @HttpCode(HttpStatus.OK)
+  async getSopsByListofIds(@Body() ids: string[]) {
+    return await this.sopService.getSopByListOfIds(ids)
+  }
+
+  
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)

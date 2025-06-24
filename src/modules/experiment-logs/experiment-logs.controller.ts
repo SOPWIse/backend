@@ -40,6 +40,7 @@ export class ExperimentLogsController {
     status: 201,
     description: 'The experiment log has been successfully created.',
   })
+  @Roles(Role.VP, Role.ADMIN, Role.SCIENTIST, Role.TECHNICIAN)
   async createLog(@Body() body: ExperimentLogDto) {
     return await this.experimentLogsService.createLog(body);
   }
@@ -65,6 +66,7 @@ export class ExperimentLogsController {
     status: 201,
     description: 'The step has been successfully created.',
   })
+  @Roles(Role.VP, Role.ADMIN, Role.SCIENTIST, Role.TECHNICIAN)
   async createStep(@Body() step: StepDto) {
     return await this.experimentLogsService.createStepOnLogId(step);
   }
@@ -76,6 +78,7 @@ export class ExperimentLogsController {
     status: 200,
     description: 'The experiment log has been successfully updated.',
   })
+  @Roles(Role.VP, Role.ADMIN, Role.SCIENTIST, Role.TECHNICIAN)
   async updateLog(@Param('id') id: string, @Body() body: Partial<ExperimentLogDto>) {
     return await this.experimentLogsService.updateLogs(id, body);
   }
@@ -109,6 +112,7 @@ export class ExperimentLogsController {
     status: 200,
     description: 'Experiment logs for the given SOP ID.',
   })
+  @Roles(Role.VP, Role.ADMIN, Role.SCIENTIST, Role.TECHNICIAN)
   async getLogsBySopId(@Param('sopId') sopId: string) {
     return await this.experimentLogsService.getLogsBySopId(sopId);
   }
@@ -120,6 +124,7 @@ export class ExperimentLogsController {
     status: 200,
     description: 'Experiment logs for the given User ID.',
   })
+  @Roles(Role.VP, Role.ADMIN, Role.SCIENTIST, Role.TECHNICIAN)
   async getLogsByUserId(@Param('userId') userId: string) {
     return await this.experimentLogsService.getLogByUserId(userId);
   }
@@ -131,6 +136,7 @@ export class ExperimentLogsController {
     status: 200,
     description: 'Steps for the specified experiment log.',
   })
+  @Roles(Role.VP, Role.ADMIN, Role.SCIENTIST, Role.TECHNICIAN)
   async getStepsByLogId(@Param('logId') logId: string) {
     return await this.experimentLogsService.getStepsByLogId(logId);
   }
@@ -142,6 +148,7 @@ export class ExperimentLogsController {
     status: 200,
     description: 'The step was found.',
   })
+  @Roles(Role.VP, Role.ADMIN, Role.SCIENTIST, Role.TECHNICIAN)
   async getStepById(@Param('id') id: string) {
     return await this.experimentLogsService.getStepById(id);
   }
