@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE_REPO_NAME: 'simple-docker-service-02e2fbb8bb27' # Replace with your ECR repo name
+    IMAGE_TAG: 'latest'
+    REGION: 'us-east-2' # Replace with your region
+
+phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo "Installing dependencies (jq)..."
+      - yum install -y jq
+
+  pre_build:
+    commands:
+      - echo "Logging into Docker Hub..."
+      - |
+        SECRET=$(aws secretsmanager get-secret-value --secret-id dockerhub/credentials --query SecretString --output text)
+        DOCKER_USERNAME=$(echo $SECRET | jq -r .username)
+        DOCKER_PASSWORD=$(echo $SECRET | jq -r .password)
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - echo "Logging into Amazon ECR..."
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin \
+        216989137397.dkr.ecr.$REGION.amazonaws.com
+
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f ./Dockerfile .
+
+  post_build:
+    commands:
+      - echo "Tagging image for ECR..."
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG \
+        216989137397.dkr.ecr.$REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+
+      - echo "Pushing image to ECR..."
+      - docker push 216989137397.dkr.ecr.$REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
