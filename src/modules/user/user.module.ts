@@ -10,14 +10,7 @@ import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Module({
   imports: [PaginationModule],
-  providers: [
-    AuthService,
-    JwtService,
-    PrismaService,
-    UserService,
-    ConfigService,
-    JwtStrategy,
-  ],
+  providers: [AuthService, JwtService, PrismaService, UserService, ConfigService, JwtStrategy],
   controllers: [UserController],
   exports: [UserService],
 })

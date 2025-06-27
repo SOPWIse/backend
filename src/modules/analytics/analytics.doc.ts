@@ -9,7 +9,7 @@ const examples = {
       model: 'Sop',
       operation: 'count',
       filter: {
-        filters: {isListed: true, isDeleted: false},
+        filters: { isListed: true, isDeleted: false },
       },
     },
     {
@@ -36,7 +36,7 @@ const examples = {
           max: ['total_time'],
         },
         orderBy: {
-          _sum: {total_time: 'desc'},
+          _sum: { total_time: 'desc' },
         },
       },
     },
@@ -60,7 +60,6 @@ const examples = {
     },
   ],
 };
-
 
 export function RunAnalyticsDoc() {
   return applyDecorators(
@@ -125,9 +124,9 @@ export function RunAnalyticsDoc() {
       type: MultiModelAnalyticsDto,
       examples: {
         comprehensiveMultiModelAnalytics: {
-					description: 'Comprehensive multi-model analytics request example',
-					value: examples,
-				}
+          description: 'Comprehensive multi-model analytics request example',
+          value: examples,
+        },
       },
     }),
   );

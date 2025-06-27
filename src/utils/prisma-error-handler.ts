@@ -17,9 +17,7 @@ export function handlePrismaError(error: unknown): never {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     switch (error.code) {
       case 'P2002':
-        throw new BadRequestException(
-          `Duplicate field: ${getFieldFromMeta(error.meta)}`,
-        );
+        throw new BadRequestException(`Duplicate field: ${getFieldFromMeta(error.meta)}`);
       case 'P2003':
         throw new BadRequestException('Invalid foreign key reference.');
       case 'P2025':
@@ -27,14 +25,10 @@ export function handlePrismaError(error: unknown): never {
       case 'P2004':
         throw new ForbiddenException('Constraint violation detected.');
       default:
-        throw new InternalServerErrorException(
-          `Database error: ${error.message}`,
-        );
+        throw new InternalServerErrorException(`Database error: ${error.message}`);
     }
   } else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
-    throw new InternalServerErrorException(
-      'An unknown database error occurred.',
-    );
+    throw new InternalServerErrorException('An unknown database error occurred.');
   } else if (error instanceof Prisma.PrismaClientRustPanicError) {
     throw new InternalServerErrorException('A database panic occurred.');
   } else if (error instanceof Prisma.PrismaClientInitializationError) {

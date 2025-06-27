@@ -10,14 +10,7 @@ import { SopService } from './sop.service';
 
 @Module({
   controllers: [SopController],
-  providers: [
-    SopService,
-    PrismaService,
-    PaginationService,
-    ConfigService,
-    ApprovalsService,
-    CommentService,
-  ],
+  providers: [SopService, PrismaService, PaginationService, ConfigService, ApprovalsService, CommentService],
   imports: [FileManagerModule],
 })
 export class SopModule {}

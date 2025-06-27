@@ -1,12 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsDate,
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsBoolean, IsDate, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateCommentDto {
   @ApiProperty({
@@ -52,8 +45,7 @@ export class CreateCommentDto {
   parentId?: string;
 
   @ApiPropertyOptional({
-    description:
-      'The timestamp when the comment was created. Managed by the database.',
+    description: 'The timestamp when the comment was created. Managed by the database.',
     example: '2024-12-16T08:00:00.000Z',
   })
   @IsDate()
@@ -61,8 +53,7 @@ export class CreateCommentDto {
   createdAt?: string;
 
   @ApiPropertyOptional({
-    description:
-      'The timestamp when the comment was last updated. Managed by the database.',
+    description: 'The timestamp when the comment was last updated. Managed by the database.',
     example: '2024-12-16T09:00:00.000Z',
   })
   @IsDate()

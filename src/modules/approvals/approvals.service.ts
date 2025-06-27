@@ -8,7 +8,10 @@ import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
 
 @Injectable()
 export class ApprovalsService {
-  constructor(private readonly prisma: PrismaService, private readonly pagination: PaginationService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly pagination: PaginationService,
+  ) {}
 
   async createApproval({ allowedRole, approvedBy, contentId, description, authorId, status }: CreateApproval) {
     return this.prisma.safeCreate<Approval, CreateApproval>('approval', {

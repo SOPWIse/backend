@@ -44,15 +44,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ExperimentLogsModule,
     AnalyticsModule,
   ],
-  providers: [
-    AuthService,
-    UserService,
-    JwtService,
-    PrismaService,
-    ConfigService,
-    PaginationService,
-    ApprovalsService,
-  ],
+  providers: [AuthService, UserService, JwtService, PrismaService, ConfigService, PaginationService, ApprovalsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

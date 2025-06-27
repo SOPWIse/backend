@@ -8,13 +8,7 @@ import { ApprovalsController } from './approvals.controller';
 
 @Module({
   controllers: [ApprovalsController],
-  providers: [
-    ConfigService,
-    JwtService,
-    PrismaService,
-    PaginationService,
-    ApprovalsService,
-  ],
+  providers: [ConfigService, JwtService, PrismaService, PaginationService, ApprovalsService],
   exports: [ApprovalsService],
 })
 export class ApprovalsModule {}

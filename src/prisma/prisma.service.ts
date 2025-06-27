@@ -4,10 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
 
 @Injectable()
-export class PrismaService
-  extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor(config: ConfigService) {
     super({
       datasources: {

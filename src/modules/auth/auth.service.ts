@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '@sopwise/modules/user/user.service';
@@ -19,23 +15,9 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async register({
-    email,
-    name,
-    password,
-    role,
-    provider,
-    metaData,
-  }: Register) {
+  async register({ email, name, password, role, provider, metaData }: Register) {
     const hashedPassword = await argon2.hash(password);
-    return this.userService.createUser(
-      email,
-      name,
-      hashedPassword,
-      role,
-      provider,
-      metaData,
-    );
+    return this.userService.createUser(email, name, hashedPassword, role, provider, metaData);
   }
 
   async login({ email, password }: Login) {

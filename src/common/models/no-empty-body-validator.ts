@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
 @ValidatorConstraint({ name: 'NoEmptyBody', async: false })
 @Injectable()

@@ -7,7 +7,10 @@ import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService, private readonly paginationService: PaginationService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly paginationService: PaginationService,
+  ) {}
 
   async createUser(email: string, name: string, hash: string, role: Role, provider?: string, metaData?: string) {
     const res = await this.prisma.safeCreate<SopWiseUser, Prisma.SopWiseUserCreateInput>('sopWiseUser', {

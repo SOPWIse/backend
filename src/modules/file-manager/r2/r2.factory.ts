@@ -11,8 +11,7 @@ export class R2ClientFactory {
     // const accessKeyId = 'AKIAY5KMC4GMU7F5D5GH'
     const accessKeyId = this.configService.get<string>('ACCESS_KEY_ID');
     const accountId = this.configService.get<string>('ACCOUNT_ID');
-    const secretAccessKey =
-      this.configService?.get<string>('SECRET_ACCESS_KEY');
+    const secretAccessKey = this.configService?.get<string>('SECRET_ACCESS_KEY');
     const endpoint = this.configService?.get<string>('R2_URL');
 
     console.log({ accessKeyId, accountId, secretAccessKey });
