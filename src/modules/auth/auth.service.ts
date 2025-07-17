@@ -1,10 +1,12 @@
+import * as argon2 from 'argon2';
+
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Login, Register } from '@sopwise/types/auth.types';
+
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '@sopwise/modules/user/user.service';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
-import { Login, Register } from '@sopwise/types/auth.types';
-import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -15,9 +17,9 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async register({ email, name, password, role, provider, metaData }: Register) {
-    const hashedPassword = await argon2.hash(password);
-    return this.userService.createUser(email, name, hashedPassword, role, provider, metaData);
+  async register(body: Register) {
+    const hashedPassword = await argon2.hash(body.password);
+    return this.userService.createUser({ ...body, hash: hashedPassword });
   }
 
   async login({ email, password }: Login) {

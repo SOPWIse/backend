@@ -19,6 +19,16 @@ const register = z.object({
     .max(30, 'Password must be maximum of 30 characters long'),
   provider: z.string().default('sopwise').optional(),
   metaData: z.any().optional(),
+
+  designation: z.string().optional(),
+  department: z.string().optional(),
+  profilePicture: z.string().optional(),
+  country: z.string().optional(),
+  phoneNumber: z
+    .string()
+    .optional()
+    .refine((val) => !val || /^\+?[1-9]\d{1,14}$/.test(val), { message: 'Invalid phone number format' }),
+  companyName: z.string().optional(),
 });
 
 const signInToken = z.object({

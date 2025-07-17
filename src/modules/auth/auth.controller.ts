@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { AuthService } from '@sopwise/modules/auth/auth.service';
-import { LoginDto, RegisterDto } from '@sopwise/modules/auth/dto/auth.dto';
+import { LoginDto, RegisterDto, SSOLoginDto } from '@sopwise/modules/auth/dto/auth.dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
 import { Roles } from '@sopwise/roles/roles.decorator';
 import { RolesGuard } from '@sopwise/roles/roles.guard';
@@ -14,8 +14,8 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Register User' })
-  async register(@Body() { email, name, password, role }: RegisterDto) {
-    return this.authService.register({ email, name, password, role });
+  async register(@Body() body: RegisterDto) {
+    return this.authService.register(body);
   }
 
   @Post('login')
@@ -28,7 +28,7 @@ export class AuthController {
   @Post('sso-login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'SSO Login' })
-  async ssoLogin(@Body() ssoData: RegisterDto) {
+  async ssoLogin(@Body() ssoData: SSOLoginDto) {
     return this.authService.ssoLogin(ssoData);
   }
 

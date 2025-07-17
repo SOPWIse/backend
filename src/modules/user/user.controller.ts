@@ -14,6 +14,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Role, SopWiseUser } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
+import { PersonalInfoDto } from '@sopwise/modules/auth/dto/auth.dto';
 import { UpdateUserDto } from '@sopwise/modules/auth/dto/auth.update-user-dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
 import { GetCurrentUser } from '@sopwise/modules/user/decorator/current-user.decorator';
@@ -52,6 +53,15 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(id, updateUserDto);
+  }
+
+  @Patch('/personal-info')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AUTHOR, Role.ASSISTANT, Role.VP, Role.TECHNICIAN)
+  @ApiOperation({ summary: "Update user's personal info by id" })
+  @HttpCode(HttpStatus.OK)
+  async collectPeronsalInfo(@GetCurrentUser() user: SopWiseUser, @Body() updateUserDto: PersonalInfoDto) {
+    return this.userService.updatePersonalInfo(user.id, updateUserDto);
   }
 
   @Get(':id')
