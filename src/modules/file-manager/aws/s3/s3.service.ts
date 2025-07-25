@@ -1,9 +1,4 @@
-import {
-  DeleteObjectCommand,
-  GetObjectCommand,
-  PutObjectCommand,
-  PutObjectCommandInput,
-} from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { S3ClientFactory } from '@sopwise/modules/file-manager/aws/s3/s3.factory';
 import { Readable } from 'node:stream';
@@ -23,13 +18,7 @@ interface S3UploadArgs extends S3ObjectAccessArgs {
 export class S3Service {
   constructor(private readonly s3Factory: S3ClientFactory) {}
 
-  async upload({
-    file,
-    objectKey,
-    mimeType,
-    bucket,
-    isPublic = true,
-  }: S3UploadArgs): Promise<string> {
+  async upload({ file, objectKey, mimeType, bucket, isPublic = true }: S3UploadArgs): Promise<string> {
     try {
       const commandInput: PutObjectCommandInput = {
         Key: objectKey,
@@ -52,13 +41,7 @@ export class S3Service {
     }
   }
 
-  async replace({
-    file,
-    objectKey,
-    mimeType,
-    bucket,
-    isPublic = true,
-  }: S3UploadArgs): Promise<void> {
+  async replace({ file, objectKey, mimeType, bucket, isPublic = true }: S3UploadArgs): Promise<void> {
     await this.deleteObject({ objectKey, bucket });
     await this.upload({ file, objectKey, mimeType, bucket, isPublic });
   }
@@ -84,8 +67,7 @@ export class S3Service {
         contentStream: object.Body as Readable,
       };
     } catch (error) {
-      if (error.name === 'NoSuchKey')
-        throw new Error('The file does not exist in storage');
+      if (error.name === 'NoSuchKey') throw new Error('The file does not exist in storage');
       throw new Error('An error occurred downloading the file from storage');
     }
   }

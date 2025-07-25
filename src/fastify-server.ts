@@ -1,10 +1,7 @@
 import { DynamicModule, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { HttpExceptionFilter } from '@sopwise/common/exceptions/exception-filter';
 import { CompressionConfig } from '@sopwise/config/compression/compression.config';
 import { CsrfProtectionConfig } from '@sopwise/config/security/csrf-protection.config';
@@ -40,13 +37,9 @@ export default class FastifyServerApplication {
   }
 
   public async run(appModule: unknown): Promise<void> {
-    this.app = await NestFactory.create<NestFastifyApplication>(
-      appModule,
-      new FastifyAdapter(),
-      {
-        rawBody: true,
-      },
-    );
+    this.app = await NestFactory.create<NestFastifyApplication>(appModule, new FastifyAdapter(), {
+      rawBody: true,
+    });
 
     const configService = this.app.get(ConfigService);
     const PORT = configService.get('PORT') || 3000;

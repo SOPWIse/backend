@@ -1,9 +1,4 @@
-import {
-  ApiProperty,
-  ApiResponseProperty,
-  IntersectionType,
-  PartialType,
-} from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty, IntersectionType, PartialType } from '@nestjs/swagger';
 import { BaseUpdateDTO } from '@sopwise/common/models/base-model';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces';
 import { IsOptional, IsString } from 'class-validator';
@@ -68,6 +63,4 @@ export class CreateFileJsonDTO implements IUpdateFile {
   file: MulterFile;
 }
 
-export class UpdateFileDTO
-  extends IntersectionType(PartialType(CreateFileDTO), BaseUpdateDTO)
-  implements IUpdateFile {}
+export class UpdateFileDTO extends IntersectionType(PartialType(CreateFileDTO), BaseUpdateDTO) implements IUpdateFile {}

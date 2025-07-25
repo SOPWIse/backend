@@ -1,14 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
-import {
-  BaseResponse,
-  PaginationMeta,
-} from '@sopwise/common/pagination/pagination.inteface';
+import { BaseResponse, PaginationMeta } from '@sopwise/common/pagination/pagination.inteface';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 
 @Injectable()
@@ -39,7 +32,7 @@ export class PaginationService {
       const skip = (page - 1) * limit;
 
       // Build where clause
-      let where: any = { ...filter };
+      const where: any = { ...filter };
 
       // Handle search
       if (search && searchFields.length > 0) {

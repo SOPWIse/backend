@@ -250,11 +250,14 @@ export class AnalyticsService {
 
     const userMap = new Map(userDetails.map((user) => [user.id, user]));
 
-    const uniqueSopCounts = userLogs.reduce((acc, log) => {
-      if (!acc[log.userId]) acc[log.userId] = new Set();
-      acc[log.userId].add(log.sopId);
-      return acc;
-    }, {} as Record<string, Set<string>>);
+    const uniqueSopCounts = userLogs.reduce(
+      (acc, log) => {
+        if (!acc[log.userId]) acc[log.userId] = new Set();
+        acc[log.userId].add(log.sopId);
+        return acc;
+      },
+      {} as Record<string, Set<string>>,
+    );
 
     return topUsers.map((row) => {
       const userId = row.userId;

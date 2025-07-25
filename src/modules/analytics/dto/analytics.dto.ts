@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-
 export enum AnalyticsOperation {
   COUNT = 'count',
   GROUP_BY = 'groupBy',

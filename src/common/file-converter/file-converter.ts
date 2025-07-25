@@ -2,16 +2,9 @@ import { IFileBody } from '@sopwise/modules/file-manager/types';
 import * as puppeteer from 'puppeteer';
 
 class PdfService {
-  async generatePdfAsMulterFile(
-    fileName: string,
-    html: string,
-  ): Promise<IFileBody> {
+  async generatePdfAsMulterFile(fileName: string, html: string): Promise<IFileBody> {
     const browser = await puppeteer.launch({
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-      ],
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     });
     const page = await browser.newPage();
 

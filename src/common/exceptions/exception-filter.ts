@@ -1,10 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import {
   PrismaClientInitializationError,
   PrismaClientKnownRequestError,
@@ -32,10 +26,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response: FastifyReply = ctx.getResponse<FastifyReply>();
     const request: FastifyRequest = ctx.getRequest<FastifyRequest>();
 
-    let status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
     let errorResponse: ErrorResponse = {
       statusCode: status,
@@ -48,7 +39,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof ZodError) {
       errorResponse.statusCode = HttpStatus.BAD_REQUEST;
       errorResponse.message = 'Validation failed';
-      errorResponse.errors = exception.errors.map(e => ({
+      errorResponse.errors = exception.errors.map((e) => ({
         path: e.path.join('.'),
         message: e.message,
       }));
@@ -93,8 +84,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
             ? exceptionResponse
             : (exceptionResponse as any).error || exception.message,
         details:
-          typeof exceptionResponse === 'object' &&
-          exceptionResponse.hasOwnProperty('message')
+          typeof exceptionResponse === 'object' && exceptionResponse.hasOwnProperty('message')
             ? (exceptionResponse as any).message
             : undefined,
       };

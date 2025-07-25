@@ -18,19 +18,10 @@ export const sopSchema = z.object({
   isDeleted: z.boolean().default(false),
   publishedAt: z.date().optional().nullable(),
   metaData: z.record(z.any()).optional(),
-  content: z
-    .string()
-    .min(0, 'Content is required')
-    .max(1000000, 'Content is too long')
-    .nullable()
-    .optional(),
+  content: z.string().min(0, 'Content is required').max(1000000, 'Content is too long').nullable().optional(),
   createdAt: z.any().optional(),
   updatedAt: z.any().optional(),
-  contentUrl: z
-    .string()
-    .url('Invalid URL')
-    .max(500, 'Content URL must not exceed 500 characters')
-    .optional(),
+  contentUrl: z.string().url('Invalid URL').max(500, 'Content URL must not exceed 500 characters').optional(),
 });
 
 export type CreateSop = z.infer<typeof sopSchema>;

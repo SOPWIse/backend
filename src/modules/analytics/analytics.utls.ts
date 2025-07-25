@@ -1,17 +1,9 @@
-import { Prisma } from "@prisma/client";
-import { ModelName, SopwiseAnalyticsFilter } from "@sopwise/types/analytics.types";
+import { Prisma } from '@prisma/client';
+import { ModelName, SopwiseAnalyticsFilter } from '@sopwise/types/analytics.types';
 
 export function buildGenericWhere(filter: SopwiseAnalyticsFilter, model?: ModelName): any {
   const where: Record<string, any> = {};
-  const {
-    filters = {},
-    search,
-    role,
-    searchFields = [],
-    dateField = 'createdAt',
-    startDate,
-    endDate,
-  } = filter;
+  const { filters = {}, search, role, searchFields = [], dateField = 'createdAt', startDate, endDate } = filter;
 
   for (const [key, value] of Object.entries(filters)) {
     if (value !== undefined) {
@@ -37,13 +29,13 @@ export function buildGenericWhere(filter: SopwiseAnalyticsFilter, model?: ModelN
     ExperimentLog: 'user',
     Sop: 'author',
     Comment: 'author',
-  }
+  };
 
-  if( role && model && model in mapUserColumnOnModel ) {
+  if (role && model && model in mapUserColumnOnModel) {
     const userColumn = mapUserColumnOnModel[model as keyof allowedModels];
     where[userColumn] = {
       role: {
-        in: role
+        in: role,
       },
     };
   }

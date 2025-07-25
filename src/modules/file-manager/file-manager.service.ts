@@ -1,18 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileSettings } from '@prisma/client';
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
 import { S3Service } from '@sopwise/modules/file-manager/aws/s3/s3.service';
 import { FileDetailsResponseDTO } from '@sopwise/modules/file-manager/dto/file-upload-response.dto';
-import {
-  CreateFileDTO,
-  UpdateFileDTO,
-} from '@sopwise/modules/file-manager/dto/file-upload-s3.dto';
+import { CreateFileDTO, UpdateFileDTO } from '@sopwise/modules/file-manager/dto/file-upload-s3.dto';
 import { R2Service } from '@sopwise/modules/file-manager/r2/r2.service';
 import { IFileBody } from '@sopwise/modules/file-manager/types';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
@@ -27,10 +20,7 @@ export class FileManagerService {
     private readonly config: ConfigService,
   ) {}
 
-  async uploadFile(
-    file: Express.Multer.File,
-    isPublic = true,
-  ): Promise<string> {
+  async uploadFile(file: Express.Multer.File, isPublic = true): Promise<string> {
     const { originalname, mimetype, buffer } = file;
 
     const bucket = this.config.get<string>('BUCKET_NAME');
@@ -45,10 +35,7 @@ export class FileManagerService {
     });
   }
 
-  private async uploadToS3(
-    file: IFileBody,
-    userId: string,
-  ): Promise<{ objectKey: string; url: string }> {
+  private async uploadToS3(file: IFileBody, userId: string): Promise<{ objectKey: string; url: string }> {
     const objectKey = this.generateObjectKey(userId, file.originalName);
     const bucket = this.config?.get<string>('BUCKET_NAME');
 
@@ -62,17 +49,10 @@ export class FileManagerService {
     return { objectKey, url };
   }
 
-  async uploadFileAws(
-    data: CreateFileDTO,
-    id: string,
-    file: IFileBody,
-  ): Promise<FileDetailsResponseDTO> {
+  async uploadFileAws(data: CreateFileDTO, id: string, file: IFileBody): Promise<FileDetailsResponseDTO> {
     const { objectKey, url } = await this.uploadToS3(file, id);
 
-    const fileEntity = await this.prisma.safeCreate<
-      FileSettings,
-      FileDetailsResponseDTO
-    >('fileSettings', {
+    const fileEntity = await this.prisma.safeCreate<FileSettings, FileDetailsResponseDTO>('fileSettings', {
       id: objectKey,
       userId: id,
       file: url,
@@ -86,11 +66,7 @@ export class FileManagerService {
     return fileEntity;
   }
 
-  async update(
-    id: string,
-    updateFileDto: UpdateFileDTO,
-    file?: IFileBody,
-  ): Promise<FileSettings> {
+  async update(id: string, updateFileDto: UpdateFileDTO, file?: IFileBody): Promise<FileSettings> {
     try {
       const existingFile = await this.prisma.fileSettings.findUnique({
         where: { id },
@@ -123,20 +99,16 @@ export class FileManagerService {
   }
 
   async findAll(query: PaginationQueryDto) {
-    return this.paginationService.paginate<FileSettings>(
-      'FileSettings',
-      query,
-      {
-        id: true,
-        userId: true,
-        file: true,
-        title: true,
-        visibility: true,
-        category: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    );
+    return this.paginationService.paginate<FileSettings>('FileSettings', query, {
+      id: true,
+      userId: true,
+      file: true,
+      title: true,
+      visibility: true,
+      category: true,
+      createdAt: true,
+      updatedAt: true,
+    });
   }
   async findOne(id: string) {
     return this.prisma.fileSettings.findUnique({ where: { id } });

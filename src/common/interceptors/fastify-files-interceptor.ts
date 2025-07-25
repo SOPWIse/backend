@@ -1,12 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Inject,
-  mixin,
-  NestInterceptor,
-  Optional,
-  Type,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Inject, mixin, NestInterceptor, Optional, Type } from '@nestjs/common';
 import FastifyMulter from 'fastify-multer';
 import { Multer, Options } from 'multer';
 import { Observable } from 'rxjs';
@@ -28,24 +20,17 @@ export function FastifyFilesInterceptor(
       this.multer = (FastifyMulter as any)({ ...options, ...localOptions });
     }
 
-    async intercept(
-      context: ExecutionContext,
-      next: CallHandler,
-    ): Promise<Observable<any>> {
+    async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
       const ctx = context.switchToHttp();
 
       await new Promise<void>((resolve, reject) =>
-        this.multer.array(fieldName, maxCount)(
-          ctx.getRequest(),
-          ctx.getResponse(),
-          (error: any) => {
-            if (error) {
-              // const error = transformException(err);
-              return reject(error);
-            }
-            resolve();
-          },
-        ),
+        this.multer.array(fieldName, maxCount)(ctx.getRequest(), ctx.getResponse(), (error: any) => {
+          if (error) {
+            // const error = transformException(err);
+            return reject(error);
+          }
+          resolve();
+        }),
       );
 
       return next.handle();

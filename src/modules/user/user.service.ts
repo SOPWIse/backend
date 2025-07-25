@@ -1,15 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, Role, SopWiseUser } from '@prisma/client';
+import { Prisma, SopWiseUser } from '@prisma/client';
+
 import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
+import { PersonalInfoDto } from '@sopwise/modules/auth/dto/auth.dto';
 import { UpdateUserDto } from '@sopwise/modules/auth/dto/auth.update-user-dto';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
+import { Register } from '@sopwise/types/auth.types';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService, private readonly paginationService: PaginationService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly paginationService: PaginationService,
+  ) {}
 
-  async createUser(email: string, name: string, hash: string, role: Role, provider?: string, metaData?: string) {
+  async createUser(body: Register & { hash: string }) {
+    const {
+      email,
+      name,
+      role,
+      hash,
+      provider,
+      metaData,
+      companyName,
+      designation,
+      department,
+      profilePicture,
+      country,
+      phoneNumber,
+    } = body;
+
     const res = await this.prisma.safeCreate<SopWiseUser, Prisma.SopWiseUserCreateInput>('sopWiseUser', {
       email,
       name,
@@ -17,6 +38,12 @@ export class UserService {
       role,
       provider: provider ?? 'sopwise',
       metaData,
+      companyName,
+      designation,
+      department,
+      profilePicture,
+      country,
+      phoneNumber,
     });
     delete res.hash;
     return res;
@@ -64,6 +91,20 @@ export class UserService {
     const res = await this.prisma.sopWiseUser.update({
       where: { id },
       data: updateUserDto,
+    });
+    delete res.hash;
+    return res;
+  }
+
+  async updatePersonalInfo(id: string, personalInfoDto: PersonalInfoDto) {
+    const user = await this.prisma.sopWiseUser.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    const res = await this.prisma.sopWiseUser.update({
+      where: { id },
+      data: personalInfoDto,
     });
     delete res.hash;
     return res;

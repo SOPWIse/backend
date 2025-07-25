@@ -1,9 +1,4 @@
-import {
-  DeleteObjectCommand,
-  GetObjectCommand,
-  PutObjectCommand,
-  PutObjectCommandInput,
-} from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { R2ClientFactory } from '@sopwise/modules/file-manager/r2/r2.factory';
@@ -56,13 +51,7 @@ export class R2Service {
     }
   }
 
-  async replace({
-    file,
-    objectKey,
-    mimeType,
-    bucket,
-    isPublic = true,
-  }: R2UploadArgs): Promise<void> {
+  async replace({ file, objectKey, mimeType, bucket, isPublic = true }: R2UploadArgs): Promise<void> {
     await this.deleteObject({ objectKey, bucket });
     await this.upload({ file, objectKey, mimeType, bucket, isPublic });
   }
@@ -88,8 +77,7 @@ export class R2Service {
         contentStream: object.Body as Readable,
       };
     } catch (error) {
-      if (error.name === 'NoSuchKey')
-        throw new Error('The file does not exist in storage');
+      if (error.name === 'NoSuchKey') throw new Error('The file does not exist in storage');
       throw new Error('An error occurred downloading the file from storage');
     }
   }
