@@ -14,21 +14,24 @@ phases:
       - echo "Installing dependencies (jq)..."
       - yum install -y jq
 
-  pre_build:
-    commands:
-      - echo "Logging into Docker Hub..."
+      - echo "Logging into Docker Hub early..."
       - |
         SECRET=$(aws secretsmanager get-secret-value --secret-id dockerhub/credentials --query SecretString --output text)
         DOCKER_USERNAME=$(echo $SECRET | jq -r .username)
         DOCKER_PASSWORD=$(echo $SECRET | jq -r .password)
         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
+  pre_build:
+    commands:
       - echo "Logging into Amazon ECR..."
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin \
         216989137397.dkr.ecr.$REGION.amazonaws.com
 
   build:
     commands:
+      - echo "Pulling base image to cache it (prevents rate limit)..."
+      - docker pull node:20-bullseye
+
       - echo "Building Docker image..."
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f ./Dockerfile .
 
