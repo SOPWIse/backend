@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-//
 const SopStatusEnum = z.enum(['DRAFT', 'PUBLISHED', 'LISTED', 'REJECTED']);
 
 export const sopSchema = z.object({
@@ -22,6 +21,26 @@ export const sopSchema = z.object({
   createdAt: z.any().optional(),
   updatedAt: z.any().optional(),
   contentUrl: z.string().url('Invalid URL').max(500, 'Content URL must not exceed 500 characters').optional(),
+  // New optional fields
+  supercededDocumentName: z.string().optional(),
+  childDocumentName: z.string().optional(),
+  authorNames: z.string().optional(),
+  approverNames: z.string().optional(),
+  labDirector: z.string().optional(),
+  department: z.string().optional(),
+  division: z.string().optional(),
+  documentNumber: z.string().optional(),
+  supercededDocumentNumber: z.string().optional(),
+  versionNumber: z.string().optional(),
+  capChecklistNumber: z.string().optional(),
+  isoChecklistNumber: z.string().optional(),
+  effectiveDate: z.date().optional(),
+  revisionDate: z.date().optional(),
+  approvedLocations: z.string().optional(),
+  affectedPositions: z.string().optional(),
+  affectedSites: z.string().optional(),
+  affectedDepartments: z.string().optional(),
+  companyUrl: z.string().url('Invalid company URL').max(500, 'Company URL must not exceed 500 characters').optional(),
 });
 
 export type CreateSop = z.infer<typeof sopSchema>;

@@ -1,5 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
@@ -7,11 +6,13 @@ import {
   IsObject,
   IsOptional,
   IsString,
-  IsUrl,
   IsUUID,
+  IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
+
+import { Type } from 'class-transformer';
 
 enum SopStatusEnum {
   DRAFT = 'DRAFT',
@@ -145,4 +146,116 @@ export class CreateSopDto {
   @IsUrl({}, { message: 'Invalid URL' })
   @MaxLength(500, { message: 'Content URL must not exceed 500 characters' })
   contentUrl?: string;
+
+  // ---------- NEW OPTIONAL FIELDS ----------
+
+  @ApiPropertyOptional({ description: 'Name of the superceded document' })
+  @IsOptional()
+  @IsString()
+  supercededDocumentName?: string;
+
+  @ApiPropertyOptional({ description: 'Name of the child document' })
+  @IsOptional()
+  @IsString()
+  childDocumentName?: string;
+
+  @ApiPropertyOptional({ description: 'Author names' })
+  @IsOptional()
+  @IsString()
+  authorNames?: string;
+
+  @ApiPropertyOptional({ description: 'Approver names' })
+  @IsOptional()
+  @IsString()
+  approverNames?: string;
+
+  @ApiPropertyOptional({ description: 'Lab director' })
+  @IsOptional()
+  @IsString()
+  labDirector?: string;
+
+  @ApiPropertyOptional({ description: 'Department' })
+  @IsOptional()
+  @IsString()
+  department?: string;
+
+  @ApiPropertyOptional({ description: 'Division' })
+  @IsOptional()
+  @IsString()
+  division?: string;
+
+  @ApiPropertyOptional({ description: 'Document number' })
+  @IsOptional()
+  @IsString()
+  documentNumber?: string;
+
+  @ApiPropertyOptional({ description: 'Superceded document number' })
+  @IsOptional()
+  @IsString()
+  supercededDocumentNumber?: string;
+
+  @ApiPropertyOptional({ description: 'Version number' })
+  @IsOptional()
+  @IsString()
+  versionNumber?: string;
+
+  @ApiPropertyOptional({ description: 'CAP checklist number' })
+  @IsOptional()
+  @IsString()
+  capChecklistNumber?: string;
+
+  @ApiPropertyOptional({ description: 'ISO checklist number' })
+  @IsOptional()
+  @IsString()
+  isoChecklistNumber?: string;
+
+  @ApiPropertyOptional({
+    description: 'Effective date of the SOP',
+    type: String,
+    format: 'date-time',
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  effectiveDate?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Revision date of the SOP',
+    type: String,
+    format: 'date-time',
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  revisionDate?: Date;
+
+  @ApiPropertyOptional({ description: 'Approved locations' })
+  @IsOptional()
+  @IsString()
+  approvedLocations?: string;
+
+  @ApiPropertyOptional({ description: 'Affected positions' })
+  @IsOptional()
+  @IsString()
+  affectedPositions?: string;
+
+  @ApiPropertyOptional({ description: 'Affected sites' })
+  @IsOptional()
+  @IsString()
+  affectedSites?: string;
+
+  @ApiPropertyOptional({ description: 'Affected departments' })
+  @IsOptional()
+  @IsString()
+  affectedDepartments?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL to the company logo',
+    format: 'url',
+    example: 'https://example.com/logo.png',
+  })
+  @IsOptional()
+  @IsString()
+  @IsUrl({}, { message: 'Invalid company URL' })
+  companyUrl?: string;
 }

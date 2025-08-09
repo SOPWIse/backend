@@ -1,6 +1,7 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsNumber, IsString, IsEnum, Min, IsObject, ValidateIf, IsArray } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsObject, IsOptional, IsString, Min, ValidateIf } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
+
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PaginationQueryDto {
   @ApiPropertyOptional({ minimum: 1, default: 1 })
@@ -24,7 +25,8 @@ export class PaginationQueryDto {
 
   @ApiPropertyOptional({
     type: [String],
-    description: 'Fields to search in',
+    description: 'Fields to search in for text search',
+    example: ['name', 'description', 'user.email'],
   })
   @ValidateIf((o) => o.searchFields !== undefined)
   @Transform(({ value }) => {

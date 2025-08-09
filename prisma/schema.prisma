@@ -66,6 +66,28 @@ model Sop {
   comment     Comment[]
 
   ExperimentLog ExperimentLog[] @relation("sops")
+
+
+  // Newly added fields
+  supercededDocumentName String?  @map("superceded_document_name")
+  childDocumentName      String?  @map("child_document_name")
+  authorNames            String?  @map("author_names")
+  approverNames          String?  @map("approver_names")
+  labDirector            String?  @map("lab_director")
+  department             String?  @map("department")
+  division               String?  @map("division")
+  documentNumber         String?  @map("document_number")
+  supercededDocumentNumber String? @map("superceded_document_number")
+  versionNumber          String?  @map("version_number")
+  capChecklistNumber     String?  @map("cap_checklist_number")
+  isoChecklistNumber     String?  @map("iso_checklist_number")
+  effectiveDate          DateTime? @map("effective_date")
+  revisionDate           DateTime? @map("revision_date")
+  approvedLocations      String?  @map("approved_locations")
+  affectedPositions      String?  @map("affected_positions")
+  affectedSites          String?  @map("affected_sites")
+  affectedDepartments    String?  @map("affected_departments")
+  companyUrl             String? @map("company_logo_url")
 }
 
 model FileSettings {

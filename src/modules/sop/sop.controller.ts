@@ -14,7 +14,7 @@ import {
 
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Role, SopWiseUser } from '@prisma/client';
-import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
+import { SopPaginationDto } from '@sopwise/common/pagination/sop.pagination.dto';
 import { JwtAuthGuard } from '@sopwise/modules/auth/guard/jwt.guard';
 import { AddCommentDto } from '@sopwise/modules/sop/dto/add-comment.dto';
 import { CreateSopDto } from '@sopwise/modules/sop/dto/sop.dto';
@@ -54,7 +54,7 @@ export class SopController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   async getAllSops(
     @Query(new ValidationPipe({ transform: true }))
-    query: PaginationQueryDto,
+    query: SopPaginationDto,
   ) {
     return await this.sopService.listSop(query);
   }

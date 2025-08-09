@@ -1,14 +1,15 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateSop, sopSchema } from '@sopwise/types/sop.types';
+
 import { Sop } from '@prisma/client';
 import fileConverter from '@sopwise/common/file-converter/file-converter';
-import { PaginationQueryDto } from '@sopwise/common/pagination/pagination.dto';
 import { PaginationService } from '@sopwise/common/pagination/pagination.service';
+import { SopPaginationDto } from '@sopwise/common/pagination/sop.pagination.dto';
 import { ApprovalsService } from '@sopwise/modules/approvals/approvals.service';
 import { CommentService } from '@sopwise/modules/comment/comment.service';
 import { FileManagerService } from '@sopwise/modules/file-manager/file-manager.service';
 import { PrismaService } from '@sopwise/prisma/prisma.service';
 import { CreateComment } from '@sopwise/types/comment.types';
-import { CreateSop, sopSchema } from '@sopwise/types/sop.types';
 import { createParser } from '@sopwise/utils/content-parser';
 import { handlePrismaError } from '@sopwise/utils/prisma-error-handler';
 
@@ -39,6 +40,28 @@ export class SopService {
         name: true,
       },
     },
+  };
+
+  private readonly extraSelect = {
+    supercededDocumentName: true,
+    childDocumentName: true,
+    authorNames: true,
+    approverNames: true,
+    labDirector: true,
+    department: true,
+    division: true,
+    documentNumber: true,
+    supercededDocumentNumber: true,
+    versionNumber: true,
+    capChecklistNumber: true,
+    isoChecklistNumber: true,
+    effectiveDate: true,
+    revisionDate: true,
+    approvedLocations: true,
+    affectedPositions: true,
+    affectedSites: true,
+    affectedDepartments: true,
+    companyUrl: true,
   };
 
   async createSop(body: CreateSop) {
@@ -106,9 +129,10 @@ export class SopService {
       handlePrismaError(e);
     }
   }
-  async listSop(query: PaginationQueryDto) {
-    return await this.paginationService.paginate('Sop', query, {
+  async listSop(query: SopPaginationDto) {
+    return await this.paginationService.paginateWithTransforms('Sop', query, {
       ...this.select,
+      ...this.extraSelect,
     });
   }
   //  Don't add try catch block in this function
